@@ -81,7 +81,7 @@ fileType FileType (mode_t m) {
  * @param pathname of file 
  * @returns int
 **/
-int getFileStatus (const char* path) {
+fileType getFileStatus (const char* path) {
 
     struct stat* buffer = malloc(sizeof(stat)); 
 
@@ -98,11 +98,13 @@ int getFileStatus (const char* path) {
             break;
     }
 
-    printf("filetype: %c\n\n", FileType(buffer->st_mode));     // now returns enum
+    //printf("filetype: %c\n\n", FileType(buffer->st_mode));     // now returns enum
+
+    fileType ft = FileType(buffer->st_mode);
 
     free(buffer);
 
-    return 0;
+    return ft;
 }
 
 
@@ -130,7 +132,20 @@ int parseDirectory(const char* path ,struct searchIndex* index) {               
 
         const char* _path = getItemPath(path, item_name);
 
-        getFileStatus(_path);
+        fileType type = getFileStatus(_path);
+
+        switch(type) {
+            case REGULAR:
+                printf("REGULAR");
+                break;
+            
+            case DIREC:
+                printf("DIRECTORY");
+                break;
+            default:
+                break;
+        }
+
 
        // printf("%d %d\n", fileStatusRes, errno);	    
 	   // printf("%c\n", FileType(fileStatus->st_mode));        

@@ -44,7 +44,7 @@ typedef struct searchStats {
 
 fileType FileType(mode_t m);
 
-int getFileStatus (const char* path);
+fileType getFileStatus (const char* path);
 
 int parseDirectory(const char* path ,struct searchIndex* index);
 
