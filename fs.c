@@ -98,8 +98,6 @@ fileType getFileStatus (const char* path) {
             break;
     }
 
-    //printf("filetype: %c\n\n", FileType(buffer->st_mode));     // now returns enum
-
     fileType ft = FileType(buffer->st_mode);
 
     free(buffer);
@@ -137,6 +135,11 @@ int parseDirectory(const char* path ,struct searchIndex* index) {               
         switch(type) {
             case REGULAR:
                 printf("REGULAR");
+                // int addToIndex(struct searchItem item, struct searchIndex* index)
+                // struct searchItem createSearchItem(ino_t serial, char* path, fileType type)
+                struct searchItem item = createSearchItem(currentDirectoryEntry->d_ino,_path,type); 
+                addToIndex(item, index);
+                printf("\n!!! index size: %llu!!!\n\n", index->size);
                 break;
             
             case DIREC:
@@ -215,7 +218,7 @@ struct searchStats createSearchStats() {
  * @return 0 = success | 1 = failure
  **/
 int addToIndex(struct searchItem item, struct searchIndex* index) {
-
+    index->items[index->size++] = item;
     return 0;
 }
 

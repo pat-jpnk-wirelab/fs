@@ -43,14 +43,13 @@ typedef struct searchStats {
 
 
 fileType FileType(mode_t m);
-
 fileType getFileStatus (const char* path);
-
 int parseDirectory(const char* path ,struct searchIndex* index);
-
 const char* getItemPath(const char* path, const char* item_name);
-
 struct searchStats createSearchStats();
 struct searchIndex createSearchIndex(struct searchItem*);
+
+int addToIndex(struct searchItem item, struct searchIndex* index);
+struct searchItem createSearchItem(ino_t serial, char* path, fileType type);
 
 #endif
