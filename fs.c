@@ -125,22 +125,9 @@ int parseDirectory(const char* path ,struct searchIndex* index) {               
         
         printf("RES: %s\n", currentDirectoryEntry->d_name);                          
 
-        const char* src = currentDirectoryEntry->d_name;
+        const char* item_name = currentDirectoryEntry->d_name;
 
-
-        // ###################################################
-        // build file path name 
-
-        // char *strcat(char *dest, const char *src)
-        char path[256] = "";
-        char* path_ptr = &path[0];      // remove [0] for nice errors
-
-        strcat(path_ptr,ROOTPATH);
-        strcat(path_ptr, src);
-        printf("path: %s\n", path);
-        // ###################################################
-
-        const char* _path = &path[0]; 
+        const char* _path = getItemPath(path, item_name);
 
         getFileStatus(_path);
 
@@ -194,9 +181,16 @@ int addToIndex(struct searchItem item, struct searchIndex* index) {
 }
 
 /**
- * @param
+ * @param const char* path      - current base path
+ * @param const char* item_name - item name
  * @return const char*
  **/
-const char* getItemPath() {
+const char* getItemPath(const char* path, const char* item_name) {
+    char item_path[MAX_PATH_SIZE] = "";
+    char* path_ptr = &item_path[0];      // remove [0] for nice errors
 
+    strcat(path_ptr,path);
+    strcat(path_ptr, item_name);
+
+    return path_ptr;
 }

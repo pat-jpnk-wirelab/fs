@@ -5,8 +5,8 @@
 #ifndef FS_H
 #define FS_H
 
-#define ROOTPATH "./"        // path where the file-search starts from
-
+#define ROOTPATH "./"          // path where the file-search starts from
+#define MAX_PATH_SIZE 256      // in characters
 
 #define MAX_SEARCH_ITEMS 150   // set to something smart, like OPEN_MAX
 
@@ -48,6 +48,7 @@ int getFileStatus (const char* path);
 
 int parseDirectory(const char* path ,struct searchIndex* index);
 
+const char* getItemPath(const char* path, const char* item_name);
 
 
 
