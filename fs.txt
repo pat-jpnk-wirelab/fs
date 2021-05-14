@@ -1,0 +1,32 @@
+FS
+
+1) find all occurences of a snippet of text in all files in current folder and all files contained in all folders contained in the main current folder recursively,
+   display the results nicely
+
+
+
+- check using valgrind
+
+- add commandline options for customization (getopt())
+
+- use and check for limitations like "OPENMAX"
+
+- report statistics on search
+
+materials:
+
+https://pubs.opengroup.org/onlinepubs/7908799/xsh/dirent.h.html
+
+
+https://iq.opengenus.org/traversing-folders-in-c/
+
+
+- interpret command 
+
+- index all ascii files 
+
+- parse all files for search parameter 
+- save information for successful searches 
+- output search results [summary, stats, nothing]
+ 
+
