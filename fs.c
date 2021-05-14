@@ -37,35 +37,14 @@ int main(int argc, char *argv[]) {
     struct searchStats stats;
 
 
+
+    // Parse directories, starting with ROOTPATH
+
+
+    parseDirectory(ROOTPATH, &index);
+
+
     // ------
-
-    rootDirectory = opendir(ROOTPATH);
-
-    while((currentDirectory = readdir(rootDirectory)) != NULL) {
-        printf("RES: %s\n", currentDirectory->d_name);
-
-        const char* src = currentDirectory->d_name;
-
-
-        // ###################################################
-        // build file path name 
-
-        // char *strcat(char *dest, const char *src)
-        char path[256] = "";
-        char* path_ptr = &path[0];      // remove [0] for nice errors
-
-        strcat(path_ptr,ROOTPATH);
-        strcat(path_ptr, src);
-        printf("path: %s\n", path);
-        // ###################################################
-
-        const char* _path = &path[0]; 
-
-        getFileStatus(_path);
-
-       // printf("%d %d\n", fileStatusRes, errno);	    
-	   // printf("%c\n", FileType(fileStatus->st_mode));        
-    }
 
 
 
@@ -141,9 +120,39 @@ int getFileStatus (const char* path) {
 
 // param:  
 
-int parseDirectory(const char* path ,struct searchIndex* index[]) {
+int parseDirectory(const char* path ,struct searchIndex* index[]) {                          // TODO: call recursively when detecting a directory
     DIR *rootDirectory;
     struct dirent *currentDirectory;
+    
+    rootDirectory = opendir(ROOTPATH);
+
+
+    while((currentDirectory = readdir(rootDirectory)) != NULL) {
+        printf("RES: %s\n", currentDirectory->d_name);
+
+        const char* src = currentDirectory->d_name;
+
+
+        // ###################################################
+        // build file path name 
+
+        // char *strcat(char *dest, const char *src)
+        char path[256] = "";
+        char* path_ptr = &path[0];      // remove [0] for nice errors
+
+        strcat(path_ptr,ROOTPATH);
+        strcat(path_ptr, src);
+        printf("path: %s\n", path);
+        // ###################################################
+
+        const char* _path = &path[0]; 
+
+        getFileStatus(_path);
+
+       // printf("%d %d\n", fileStatusRes, errno);	    
+	   // printf("%c\n", FileType(fileStatus->st_mode));        
+    }
+
 
 
 
