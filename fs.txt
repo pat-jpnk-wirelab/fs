@@ -4,6 +4,8 @@ FS
    display the results nicely
 
 
+- make parseDirectory() recursive
+
 
 - check using valgrind
 
