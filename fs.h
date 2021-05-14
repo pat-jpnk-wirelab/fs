@@ -6,9 +6,12 @@
 #define FS_H
 
 #define ROOTPATH "./"          // path where the file-search starts from
-#define MAX_PATH_SIZE 256      // in characters
 
+#define R "./testDirectory"
+
+#define MAX_PATH_SIZE 1028      // in characters
 #define MAX_SEARCH_ITEMS 150   // set to something smart, like OPEN_MAX
+#define MAX_DIRECTORIES 50
 
 
 typedef enum fileType {
@@ -30,7 +33,6 @@ typedef struct searchItem {
     char* res_preview;
 } searchItem;
 
-
 typedef struct searchIndex {
     searchItem* items;
     uint64_t size;
@@ -41,15 +43,35 @@ typedef struct searchStats {
     uint64_t d_count;            // number of directories searched
 } searchStats;
 
+typedef struct dirItem {
+    char* path;
+} dirItem;
+
+typedef struct dirIndex {
+    dirItem* items;
+    uint64_t size; 
+} dirIndex;
 
 fileType FileType(mode_t m);
 fileType getFileStatus (const char* path);
-int parseDirectory(const char* path ,struct searchIndex* index);
-const char* getItemPath(const char* path, const char* item_name);
-struct searchStats createSearchStats();
-struct searchIndex createSearchIndex(struct searchItem*);
+int parseDirectory(const char* path ,struct searchIndex* index, struct dirIndex* d_index);
 
-int addToIndex(struct searchItem item, struct searchIndex* index);
+int parseDirectory2(const char* path ,struct searchIndex* index, struct dirIndex* d_index);
+
+int addToSearchIndex(struct searchItem item, struct searchIndex* index);
+int addToDirIndex(struct dirItem item, struct dirIndex* index);
+
+
+void getItemPath(const char* path, const char* item_name, char* item_path);
+struct searchStats createSearchStats();
+struct searchIndex createSearchIndex(struct searchItem* item);
 struct searchItem createSearchItem(ino_t serial, char* path, fileType type);
+
+
+struct dirItem createDirItem(char* path);
+struct dirIndex createDirIndex(struct dirItem* item);
+
+
+void recursive(char *basePath, struct searchIndex* index, struct dirIndex* d_index);
 
 #endif

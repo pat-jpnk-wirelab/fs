@@ -11,7 +11,7 @@ FS
 
 - add commandline options for customization (getopt())
 
-- use and check for limitations like "OPENMAX"
+- use and check for limitations like "OPENMAX" limits.h
 
 - report statistics on search
 
@@ -29,7 +29,7 @@ materials:
 https://pubs.opengroup.org/onlinepubs/7908799/xsh/dirent.h.html
 
 
-https://iq.opengenus.org/traversing-folders-in-c/
+
 
 
 - interpret command 
@@ -41,3 +41,22 @@ https://iq.opengenus.org/traversing-folders-in-c/
 - output search results [summary, stats, nothing]
  
 
+
+
+###################################################################
+
+
+    /**
+    
+    char k[] = "/tier/mensch/Hello.v";
+
+    int64_t num = 313432;
+
+    // limits.h OPEN_MAX :  Maximum number of files that one process can have open at any one time. Minimum Acceptable Value: 20	
+    printf("open max: %d\n", OPEN_MAX);
+
+    printf("%s\n",basename(k)); // filename
+    printf("%s\n", dirname(k)); // pathname
+
+    **/
+    // ###########################################

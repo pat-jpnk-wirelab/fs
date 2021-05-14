@@ -2,53 +2,39 @@
 #include <string.h>
 #include <dirent.h>
 #include "fs.h"
-
 #include <libgen.h>
-
 #include <dirent.h>
 #include <sys/types.h>
 #include <limits.h>
 #include <errno.h>  // defines errno
-		    // errno gets set by opendir() from dirent.h
+		            // errno gets set by opendir() from dirent.h
 
 
 #include <sys/stat.h>
-
 #include <stdlib.h>
 
-int main(void) {                            // TODO: int argc, char *argv[]
+int main(void) {                                                 // TODO: int argc, char *argv[]
 
-    /**
-    
-    char k[] = "/tier/mensch/Hello.v";
-
-    int64_t num = 313432;
-
-    // limits.h OPEN_MAX :  Maximum number of files that one process can have open at any one time. Minimum Acceptable Value: 20	
-    printf("open max: %d\n", OPEN_MAX);
-
-    printf("%s\n",basename(k)); // filename
-    printf("%s\n", dirname(k)); // pathname
-
-    **/
-    // ###########################################
-
-    struct searchItem items[MAX_SEARCH_ITEMS];                                      // TODO: should this be const ?
-
+    struct searchItem items[MAX_SEARCH_ITEMS]; 
+    struct dirItem d_items[MAX_DIRECTORIES];
+                                                                 // TODO: should this be const ?
     struct searchStats stats = createSearchStats();                                 // TODO: should this be const ?
     struct searchIndex index = createSearchIndex(&items[0]);                        // TODO: should this be const ?
-
-
+    struct dirIndex d_index = createDirIndex(&d_items[0]);
 
     // Parse directories, starting with ROOTPATH
+    
+        //parseDirectory(ROOTPATH, &index, &d_index);
+    
+    //printf("%s\n",d_index.items[0].path);
+    //printf("\n\nHELLO\n\n");
+        //parseDirectory(R, &index, &d_index);
 
+    char* pp = "./";
+    
+    recursive(pp,&index, &d_index);
 
-    parseDirectory(ROOTPATH, &index);
-
-
-    // ------
-
-
+    //printf("LENGTH: %llu\n", index.size);
 
     return 0;
 }
@@ -73,20 +59,18 @@ fileType FileType (mode_t m) {
 }
 
 
-
-
-// int stat(const char *restrict path, struct stat *restrict buf);
-
 /**
  * @param pathname of file 
- * @returns int
+ * @returns fileType
 **/
 fileType getFileStatus (const char* path) {
 
-    struct stat* buffer = malloc(sizeof(stat)); 
+        //struct stat* buffer = malloc(sizeof(stat)); 
+    struct stat buff;
+    struct stat* buffer = &buff;
 
-    int fileStatusRes = stat(path,buffer); // idicates whether inf owas gotten successfully 
-    // success = 0, failure = -1
+    int fileStatusRes = stat(path,buffer); // indicates whether it was gotten successfully 
+                                           // success = 0, failure = -1
 
     // TODO: add real actions upon failure 
     switch(fileStatusRes) {
@@ -98,62 +82,64 @@ fileType getFileStatus (const char* path) {
             break;
     }
 
-    fileType ft = FileType(buffer->st_mode);
-
-    free(buffer);
-
-    return ft;
+    fileType fileType = FileType(buffer->st_mode);
+        //free(buffer);
+    return fileType;
 }
-
-
-// param:  
 
 
 /**
  * @param 
  * @return int 
  **/
-int parseDirectory(const char* path ,struct searchIndex* index) {                          // TODO: call recursively when detecting a directory
-    DIR *rootDirectory;
-    struct dirent *currentDirectoryEntry;
-    
-    rootDirectory = opendir(path);                                                          // TODO: catch opendir error
-
+int parseDirectory(const char* path ,struct searchIndex* index, struct dirIndex* d_index) {
+    DIR *rootDirectory = opendir(path);  
+    struct dirent *currentDirectoryEntry;                                                        // TODO: catch opendir error
 
     while((currentDirectoryEntry = readdir(rootDirectory)) != NULL) {                              // TODO: check readdir errors
         
-        // HERE WE GOT A FILE 
-        
-        printf("RES: %s\n", currentDirectoryEntry->d_name);                          
+        //printf("RES: %s\n", currentDirectoryEntry->d_name);              
 
+        /**
+        if(item_name[0] == '.') {
+            printf("BREEEEEEEEEEEEAK");
+            //break;
+        }**/
+
+        char item_path[MAX_PATH_SIZE] = "";
         const char* item_name = currentDirectoryEntry->d_name;
-
-        const char* _path = getItemPath(path, item_name);
-
-        fileType type = getFileStatus(_path);
+        getItemPath(path, item_name, &item_path[0]);
+        fileType type = getFileStatus(item_path);
 
         switch(type) {
             case REGULAR:
-                printf("REGULAR");
-                // int addToIndex(struct searchItem item, struct searchIndex* index)
-                // struct searchItem createSearchItem(ino_t serial, char* path, fileType type)
-                struct searchItem item = createSearchItem(currentDirectoryEntry->d_ino,_path,type); 
-                addToIndex(item, index);
-                printf("\n!!! index size: %llu!!!\n\n", index->size);
+                ;
+                struct searchItem item = createSearchItem(currentDirectoryEntry->d_ino,item_path,type); 
+                //addToSearchIndex(item, index);
                 break;
             
             case DIREC:
-                printf("DIRECTORY");
-                break;
+                if(strcmp(item_name, ".") == 0) {
+                    printf("ONE \n");
+                    break;
+                } else if (strcmp(item_name, "..") == 0) {
+                    //printf("BREAK2 %s\n", name);
+                    printf("TWO \n");
+                    break;
+                } else if (strcmp(item_name, ".git") == 0) {
+                    //printf("BREAK2 %s\n", name);
+                    printf("THREE \n");
+                    break;
+                } else {
+                    printf("BREAK3 %s\n", item_path);
+                    dirItem item = createDirItem(item_path);
+                    //addToDirIndex(item,d_index);
+                    break;
+                }
             default:
                 break;
-        }
-
-
-       // printf("%d %d\n", fileStatusRes, errno);	    
-	   // printf("%c\n", FileType(fileStatus->st_mode));        
+        }    
     }
-
 
     //closedir(rootDirectory);
     /**
@@ -162,15 +148,14 @@ int parseDirectory(const char* path ,struct searchIndex* index) {               
         Corrupt value: 0x0
         a.out(1490,0x10d7815c0) malloc: *** set a breakpoint in malloc_error_break to debug
         Abort trap: 6
-    **/
 
-   /**
     if (close == -1) {
         exit(1);
     }
     **/
 
-
+    //int close = closedir(rootDirectory);
+    printf("Dir index size: %llu \n",d_index->size);
     return 0;
 }
 
@@ -195,7 +180,7 @@ struct searchItem createSearchItem(ino_t serial, char* path, fileType type) {
 struct searchIndex createSearchIndex(struct searchItem* items) {
     struct searchIndex index;
     index.size = 0;                             // starts with size 0
-    index.items = items;                       // TODO: IS THIS CORRECT ??
+    index.items = items;                       // TODO: IS THIS CORRECT ?? should it be a pointer ? why ? 
 
     return index;
 }
@@ -217,7 +202,13 @@ struct searchStats createSearchStats() {
  * @param index - index to add item to 
  * @return 0 = success | 1 = failure
  **/
-int addToIndex(struct searchItem item, struct searchIndex* index) {
+int addToSearchIndex(struct searchItem item, struct searchIndex* index) {
+    index->items[index->size++] = item;
+    return 0;
+}
+
+
+int addToDirIndex(struct dirItem item, struct dirIndex* index) {
     index->items[index->size++] = item;
     return 0;
 }
@@ -227,12 +218,90 @@ int addToIndex(struct searchItem item, struct searchIndex* index) {
  * @param const char* item_name - item name
  * @return const char*
  **/
-const char* getItemPath(const char* path, const char* item_name) {
-    char item_path[MAX_PATH_SIZE] = "";
-    char* path_ptr = &item_path[0];      // remove [0] for nice errors
+void getItemPath(const char* path, const char* item_name, char* item_path) {
+    strcat(item_path,path);
+    strcat(item_path, item_name);
+}
 
-    strcat(path_ptr,path);
-    strcat(path_ptr, item_name);
+struct dirItem createDirItem(char* path) {
+    struct dirItem items;
+    items.path = path;
+    return items;
+}
 
-    return path_ptr;
+struct dirIndex createDirIndex(struct dirItem* items) {
+    struct dirIndex index;
+    index.items = items;
+    return index;
+}
+
+void recursive(char *path, struct searchIndex* index, struct dirIndex* d_index) {
+    struct dirent *dp;
+    DIR *dir = opendir(path);
+
+    //printf("READING: %s\n", path);
+
+    if (!dir)
+        return;
+
+    while ((dp = readdir(dir)) != NULL) {
+
+        char item_path[MAX_PATH_SIZE] = "";
+        const char* item_name = dp->d_name;
+        getItemPath(path, item_name, &item_path[0]);
+        fileType type = getFileStatus(item_path);
+        //printf("%d \n",type);
+
+            //strcat(item_path, path);
+            //strcat(item_path, item_name);
+
+        //struct searchItem item = createSearchItem(dp->d_ino,item_path,type); 
+        //addToSearchIndex(item, index);
+
+        /**
+        switch(type) {
+            case REGULAR:
+                ;
+                struct searchItem item = createSearchItem(dp->d_ino,item_path,type); 
+                addToSearchIndex(item, index);
+                break;
+            
+            case DIREC:
+                if(strcmp(item_name, ".") == 0) {
+                    printf("ONE \n");
+                    break;
+                } else if (strcmp(item_name, "..") == 0) {
+                    //printf("BREAK2 %s\n", name);
+                    printf("TWO \n");
+                    break;
+                } else if (strcmp(item_name, ".git") == 0) {
+                    //printf("BREAK2 %s\n", name);
+                    printf("THREE \n");
+                    break;
+                } else {
+                    printf("BREAK3 %s\n", item_path);
+                    dirItem item = createDirItem(item_path);
+                    addToDirIndex(item,d_index);
+                    break;
+                }
+            default:
+                break;
+        }  
+        **/
+
+            // #######
+
+        
+        printf("%s \n",item_path);
+
+        const char* ss =  "./testDirectory";
+        
+        if ( (strcmp(item_path, "./.") != 0 && strcmp(item_path, "./..") != 0) && (int) type == 4) {
+            recursive(item_path, index, d_index);
+        }
+
+        //
+    }
+    
+    closedir(dir);
 }
