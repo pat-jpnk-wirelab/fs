@@ -13,6 +13,15 @@ FS
 
 - report statistics on search
 
+- what to do with simlinks
+
+- add failure checks!!!  (malloc returns NULL failure, check: fopen, opendir, readdir)
+
+
+
+- TERMINOLOGY: file or stream is mostly called 'item' in this program
+
+
 materials:
 
 https://pubs.opengroup.org/onlinepubs/7908799/xsh/dirent.h.html

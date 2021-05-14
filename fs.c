@@ -16,7 +16,7 @@
 
 #include <stdlib.h>
 
-int main(int argc, char *argv[]) {
+int main(void) { // TODO: int argc, char *argv[]
 
     /**
     
@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
     **/
     // ###########################################
 
-    struct searchIndex index[MAX_SEARCH_ITEMS];
+    struct searchItem index[MAX_SEARCH_ITEMS];
     struct searchStats stats;
 
 
@@ -47,20 +47,6 @@ int main(int argc, char *argv[]) {
     // ------
 
 
-
-    //int close = closedir(rootDirectory); 
-    /**
-    uncommenting this causes 
-        a.out(1490,0x10d7815c0) malloc: Incorrect checksum for freed object 0x7fba144006a8: probably modified after being freed.
-        Corrupt value: 0x0
-        a.out(1490,0x10d7815c0) malloc: *** set a breakpoint in malloc_error_break to debug
-        Abort trap: 6
-    **/
-    /**
-    if (close == -1) {
-        exit(1);
-    }
-    **/
 
     return 0;
 }
@@ -120,17 +106,26 @@ int getFileStatus (const char* path) {
 
 // param:  
 
-int parseDirectory(const char* path ,struct searchIndex* index[]) {                          // TODO: call recursively when detecting a directory
+
+/**
+ * @param 
+ * @return int 
+ **/
+int parseDirectory(const char* path ,struct searchIndex* index) {                          // TODO: call recursively when detecting a directory
     DIR *rootDirectory;
-    struct dirent *currentDirectory;
+    struct dirent *currentDirectoryEntry;
     
-    rootDirectory = opendir(ROOTPATH);
+    rootDirectory = opendir(path);                                                          // TODO: catch opendir error
 
 
-    while((currentDirectory = readdir(rootDirectory)) != NULL) {
-        printf("RES: %s\n", currentDirectory->d_name);
+    while((currentDirectoryEntry = readdir(rootDirectory)) != NULL) {                              // TODO: check readdir errors
+        
+        // HERE WE GOT A FILE 
+        // TODO: 
+        
+        printf("RES: %s\n", currentDirectoryEntry->d_name);                          
 
-        const char* src = currentDirectory->d_name;
+        const char* src = currentDirectoryEntry->d_name;
 
 
         // ###################################################
@@ -154,7 +149,54 @@ int parseDirectory(const char* path ,struct searchIndex* index[]) {             
     }
 
 
+    //closedir(rootDirectory);
+    /**
+    uncommenting this causes 
+        a.out(1490,0x10d7815c0) malloc: Incorrect checksum for freed object 0x7fba144006a8: probably modified after being freed.
+        Corrupt value: 0x0
+        a.out(1490,0x10d7815c0) malloc: *** set a breakpoint in malloc_error_break to debug
+        Abort trap: 6
+    **/
+
+   /**
+    if (close == -1) {
+        exit(1);
+    }
+    **/
 
 
     return 0;
+}
+
+
+/**
+ * @param
+ * @return struct searchItem - item
+ **/ 
+struct searchItem createSearchItem(ino_t serial, char* path, fileType type) {
+    struct searchItem item;
+    item.success = false;    // default false at this point, no search attempted thus far
+    item.st_ino = serial;
+    item.type = type;
+
+    return item;
+} 
+
+
+/**
+ * @param item  - new item to add to index
+ * @param index - index to add item to 
+ * @return 0 = success | 1 = failure
+ **/
+int addToIndex(struct searchItem item, struct searchIndex* index) {
+
+    return 0;
+}
+
+/**
+ * @param
+ * @return const char*
+ **/
+const char* getItemPath() {
+
 }
