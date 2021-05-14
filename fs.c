@@ -16,7 +16,7 @@
 
 #include <stdlib.h>
 
-int main(void) { // TODO: int argc, char *argv[]
+int main(void) {                            // TODO: int argc, char *argv[]
 
     /**
     
@@ -33,8 +33,10 @@ int main(void) { // TODO: int argc, char *argv[]
     **/
     // ###########################################
 
-    struct searchItem index[MAX_SEARCH_ITEMS];
-    struct searchStats stats;
+    struct searchItem items[MAX_SEARCH_ITEMS];                                      // TODO: should this be const ?
+
+    struct searchStats stats = createSearchStats();                                 // TODO: should this be const ?
+    struct searchIndex index = createSearchIndex(&items[0]);                        // TODO: should this be const ?
 
 
 
@@ -86,6 +88,7 @@ int getFileStatus (const char* path) {
     int fileStatusRes = stat(path,buffer); // idicates whether inf owas gotten successfully 
     // success = 0, failure = -1
 
+    // TODO: add real actions upon failure 
     switch(fileStatusRes) {
         case 0:
             printf("success\n");
@@ -97,7 +100,6 @@ int getFileStatus (const char* path) {
 
     printf("filetype: %c\n\n", FileType(buffer->st_mode));     // now returns enum
 
-    
     free(buffer);
 
     return 0;
@@ -121,7 +123,6 @@ int parseDirectory(const char* path ,struct searchIndex* index) {               
     while((currentDirectoryEntry = readdir(rootDirectory)) != NULL) {                              // TODO: check readdir errors
         
         // HERE WE GOT A FILE 
-        // TODO: 
         
         printf("RES: %s\n", currentDirectoryEntry->d_name);                          
 
@@ -167,7 +168,30 @@ struct searchItem createSearchItem(ino_t serial, char* path, fileType type) {
     item.type = type;
 
     return item;
-} 
+}
+
+/**
+ * @param struct 
+ * @return struct searchIndex 
+ **/
+struct searchIndex createSearchIndex(struct searchItem* items) {
+    struct searchIndex index;
+    index.size = 0;                             // starts with size 0
+    index.items = items;                       // TODO: IS THIS CORRECT ??
+
+    return index;
+}
+
+/**
+ * @param void
+ * @return struct searchStats - new struct to hold search statistics
+**/
+struct searchStats createSearchStats() {
+    struct searchStats stats;
+    stats.f_count = 0;
+    stats.d_count = 0;
+    return stats;
+}
 
 
 /**

@@ -37,8 +37,8 @@ typedef struct searchIndex {
 } searchIndex;
 
 typedef struct searchStats {
-    int64_t f_count;            // number of files searched 
-    int64_t d_count;            // number of directories searched
+    uint64_t f_count;            // number of files searched 
+    uint64_t d_count;            // number of directories searched
 } searchStats;
 
 
@@ -50,8 +50,7 @@ int parseDirectory(const char* path ,struct searchIndex* index);
 
 const char* getItemPath(const char* path, const char* item_name);
 
-
-
-
+struct searchStats createSearchStats();
+struct searchIndex createSearchIndex(struct searchItem*);
 
 #endif
