@@ -16,32 +16,21 @@
 int main(void) {                                                 // TODO: int argc, char *argv[]
 
     struct searchItem items[MAX_SEARCH_ITEMS]; 
-    struct dirItem d_items[MAX_DIRECTORIES];
                                                                  // TODO: should this be const ?
     struct searchStats stats = createSearchStats();                                 // TODO: should this be const ?
     struct searchIndex index = createSearchIndex(&items[0]);                        // TODO: should this be const ?
-    struct dirIndex d_index = createDirIndex(&d_items[0]);
-
-    // Parse directories, starting with ROOTPATH
-    
-        //parseDirectory(ROOTPATH, &index, &d_index);
-    
-    //printf("%s\n",d_index.items[0].path);
-    //printf("\n\nHELLO\n\n");
-        //parseDirectory(R, &index, &d_index);
 
     char* pp = "./";
     
-    recursive(pp,&index, &d_index);
+    recursive(pp,&index);
 
-    //printf("LENGTH: %llu\n", index.size);
+    printf("Search index LENGTH: %llu\n", index.size);
 
     return 0;
 }
 
 /**
  * from stackoverflow (https://stackoverflow.com/questions/56212434/how-to-know-a-files-type)
- * 
  * @param m | st_mode attribute of struct stat
  * @retuns char 
 **/
@@ -92,23 +81,18 @@ fileType getFileStatus (const char* path) {
  * @param 
  * @return int 
  **/
+
+/**
 int parseDirectory(const char* path ,struct searchIndex* index, struct dirIndex* d_index) {
     DIR *rootDirectory = opendir(path);  
     struct dirent *currentDirectoryEntry;                                                        // TODO: catch opendir error
 
     while((currentDirectoryEntry = readdir(rootDirectory)) != NULL) {                              // TODO: check readdir errors
         
-        //printf("RES: %s\n", currentDirectoryEntry->d_name);              
-
-        /**
-        if(item_name[0] == '.') {
-            printf("BREEEEEEEEEEEEAK");
-            //break;
-        }**/
+        //printf("RES: %s\n", currentDirectoryEntry->d_name);
 
         char item_path[MAX_PATH_SIZE] = "";
         const char* item_name = currentDirectoryEntry->d_name;
-        getItemPath(path, item_name, &item_path[0]);
         fileType type = getFileStatus(item_path);
 
         switch(type) {
@@ -154,11 +138,12 @@ int parseDirectory(const char* path ,struct searchIndex* index, struct dirIndex*
     }
     **/
 
+/**
     //int close = closedir(rootDirectory);
     printf("Dir index size: %llu \n",d_index->size);
     return 0;
 }
-
+**/
 
 /**
  * @param
@@ -208,34 +193,23 @@ int addToSearchIndex(struct searchItem item, struct searchIndex* index) {
 }
 
 
-int addToDirIndex(struct dirItem item, struct dirIndex* index) {
-    index->items[index->size++] = item;
-    return 0;
-}
-
 /**
  * @param const char* path      - current base path
  * @param const char* item_name - item name
  * @return const char*
  **/
-void getItemPath(const char* path, const char* item_name, char* item_path) {
-    strcat(item_path,path);
-    strcat(item_path, item_name);
+void getItemPath(const char* path, const char* item_name, char* item_path, fileType type) {                        //  path: ./  
+    strcat(item_path,path);                                                                         //  item_name: testDirectory
+    strcat(item_path, item_name); 
+
+    // this fails, adds '/' to ascii files ??
+    if(strcmp(item_name, ".") != 0 && strcmp(item_name, "..") != 0 && strcmp(item_name, ".git") != 0 && type == DIREC) {
+        strcat(item_path, "/");
+    }
+    printf("\t\t\t%s \n", item_path);                                                                  // "./testDirectory"
 }
 
-struct dirItem createDirItem(char* path) {
-    struct dirItem items;
-    items.path = path;
-    return items;
-}
-
-struct dirIndex createDirIndex(struct dirItem* items) {
-    struct dirIndex index;
-    index.items = items;
-    return index;
-}
-
-void recursive(char *path, struct searchIndex* index, struct dirIndex* d_index) {
+void recursive(char *path, struct searchIndex* index) {
     struct dirent *dp;
     DIR *dir = opendir(path);
 
@@ -247,18 +221,26 @@ void recursive(char *path, struct searchIndex* index, struct dirIndex* d_index) 
     while ((dp = readdir(dir)) != NULL) {
 
         char item_path[MAX_PATH_SIZE] = "";
-        const char* item_name = dp->d_name;
-        getItemPath(path, item_name, &item_path[0]);
+        char item_path2[MAX_PATH_SIZE] = "";
+        const char* item_name = dp->d_name;                 
+
+
+        strcat(item_path,path);                                                                  
+        strcat(item_path, item_name);
+        
         fileType type = getFileStatus(item_path);
-        //printf("%d \n",type);
 
-            //strcat(item_path, path);
-            //strcat(item_path, item_name);
 
-        //struct searchItem item = createSearchItem(dp->d_ino,item_path,type); 
-        //addToSearchIndex(item, index);
+        getItemPath(path, item_name, &item_path2[0], type); 
 
-        /**
+
+        if(strcmp(item_name,".") != 0 && strcmp(item_name,"..") != 0) {
+            if ( (strcmp(item_path, "./.") != 0 && strcmp(item_path, "./..") != 0) && strcmp(item_path, "./.git") != 0 && (int) type == 4) {
+                recursive(item_path2, index);
+            }
+        }
+
+        
         switch(type) {
             case REGULAR:
                 ;
@@ -267,6 +249,13 @@ void recursive(char *path, struct searchIndex* index, struct dirIndex* d_index) 
                 break;
             
             case DIREC:
+                if(strcmp(item_name,".") != 0 && strcmp(item_name,"..") != 0) {
+                   if ( (strcmp(item_path, "./.") != 0 && strcmp(item_path, "./..") != 0) && strcmp(item_path, "./.git") != 0 && (int) type == 4) {
+                        recursive(item_path2, index);
+                    }
+                }
+                break;
+            /**
                 if(strcmp(item_name, ".") == 0) {
                     printf("ONE \n");
                     break;
@@ -284,23 +273,11 @@ void recursive(char *path, struct searchIndex* index, struct dirIndex* d_index) 
                     addToDirIndex(item,d_index);
                     break;
                 }
+                **/
             default:
                 break;
-        }  
-        **/
-
-            // #######
-
-        
-        printf("%s \n",item_path);
-
-        const char* ss =  "./testDirectory";
-        
-        if ( (strcmp(item_path, "./.") != 0 && strcmp(item_path, "./..") != 0) && (int) type == 4) {
-            recursive(item_path, index, d_index);
         }
 
-        //
     }
     
     closedir(dir);
