@@ -64,7 +64,7 @@ fileType getFileStatus (const char* path) {
     // TODO: add real actions upon failure 
     switch(fileStatusRes) {
         case 0:
-            printf("success\n");
+            //printf("success\n");
             break; 
         default:
             printf("fail\n");
@@ -149,7 +149,7 @@ int parseDirectory(const char* path ,struct searchIndex* index, struct dirIndex*
  * @param
  * @return struct searchItem - item
  **/ 
-struct searchItem createSearchItem(ino_t serial, char* path, fileType type) {
+struct searchItem createSearchItem(ino_t serial, char* path, fileType type) {                   // TODO: use path param
     struct searchItem item;
     item.success = false;    // default false at this point, no search attempted thus far
     item.st_ino = serial;
@@ -222,63 +222,39 @@ void recursive(char *path, struct searchIndex* index) {
 
         char item_path[MAX_PATH_SIZE] = "";
         char item_path2[MAX_PATH_SIZE] = "";
-        const char* item_name = dp->d_name;                 
+        const char* item_name = dp->d_name;                 // check for itemname != . | .. 
 
 
-        strcat(item_path,path);                                                                  
-        strcat(item_path, item_name);
+        if(strcmp(item_name, ".") != 0 && strcmp(item_name, "..") != 0) {
+            strcat(item_path,path);                                                                  
+            strcat(item_path, item_name);
         
-        fileType type = getFileStatus(item_path);
+            fileType type = getFileStatus(item_path);
 
 
-        getItemPath(path, item_name, &item_path2[0], type); 
-
-
-        if(strcmp(item_name,".") != 0 && strcmp(item_name,"..") != 0) {
-            if ( (strcmp(item_path, "./.") != 0 && strcmp(item_path, "./..") != 0) && strcmp(item_path, "./.git") != 0 && (int) type == 4) {
-                recursive(item_path2, index);
-            }
-        }
+            getItemPath(path, item_name, &item_path2[0], type);
 
         
-        switch(type) {
-            case REGULAR:
-                ;
-                struct searchItem item = createSearchItem(dp->d_ino,item_path,type); 
-                addToSearchIndex(item, index);
-                break;
-            
-            case DIREC:
-                if(strcmp(item_name,".") != 0 && strcmp(item_name,"..") != 0) {
-                   if ( (strcmp(item_path, "./.") != 0 && strcmp(item_path, "./..") != 0) && strcmp(item_path, "./.git") != 0 && (int) type == 4) {
-                        recursive(item_path2, index);
+            switch(type) {
+                case REGULAR:
+                    ;
+                    struct searchItem item = createSearchItem(dp->d_ino,item_path,type); 
+                    addToSearchIndex(item, index);
+                    break;
+                
+                case DIREC:
+                    if(strcmp(item_name,".") != 0 && strcmp(item_name,"..") != 0) {
+                    if ( (strcmp(item_path, "./.") != 0 && strcmp(item_path, "./..") != 0) && strcmp(item_path, "./.git") != 0 && (int) type == 4) {
+                            recursive(item_path2, index);
+                        }
                     }
-                }
-                break;
-            /**
-                if(strcmp(item_name, ".") == 0) {
-                    printf("ONE \n");
                     break;
-                } else if (strcmp(item_name, "..") == 0) {
-                    //printf("BREAK2 %s\n", name);
-                    printf("TWO \n");
+                default:
                     break;
-                } else if (strcmp(item_name, ".git") == 0) {
-                    //printf("BREAK2 %s\n", name);
-                    printf("THREE \n");
-                    break;
-                } else {
-                    printf("BREAK3 %s\n", item_path);
-                    dirItem item = createDirItem(item_path);
-                    addToDirIndex(item,d_index);
-                    break;
-                }
-                **/
-            default:
-                break;
-        }
+            }
 
-    }
+        }
+    } 
     
     closedir(dir);
 }
