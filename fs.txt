@@ -1,10 +1,48 @@
 FS
 
+TODO:
+
+- USE fileStatusRes TO REFACTOR getFileStatus();
+
+- EXPAND STATS: show which files were altered
+
+- check what should be const 
+
+- analyze where to make checks (./..) or (./.git / .git)
+
+- replace "parse" in name swith a better term 
+
+- use function pointer to function that applies to all searchIndex items 
+
+    (- enable user to create backups of folders) 
+
+    (- centralize exclusion file)
+
+    (- create fs.macro to define user macros)
+
+
+
+- create parseFile(char* search_term, struct searchItem* item);
+
+            define search and replacement actions: 
+                - add options to parseFile or separate functions ??
+                - first search, then replacement
+
+
+
+- add commandline arguments / functionality
+
+        fs options:
+            - list all files where a search_term occurs (w/wo snippets, w/ rules about search params: 'spaces, capitalization')
+            - replace a term with another term in all files (w/ options about capturing as above)
+            - provide options to restrict files searched
+
+
+
+----------------------------------------------------------------------
+
 1) find all occurences of a snippet of text in all files in current folder and all files contained in all folders contained in the main current folder recursively,
    display the results nicely
-
-
-- make parseDirectory() recursive
 
 
 - check using valgrind
@@ -21,6 +59,9 @@ FS
 
 
 
+
+
+
 - TERMINOLOGY: file or stream is mostly called 'item' in this program
 
 
@@ -33,13 +74,10 @@ https://pubs.opengroup.org/onlinepubs/7908799/xsh/dirent.h.html
 
 
 - interpret command 
-
 - index all ascii files 
-
 - parse all files for search parameter 
 - save information for successful searches 
 - output search results [summary, stats, nothing]
- 
 
 
 

@@ -5,13 +5,10 @@
 #ifndef FS_H
 #define FS_H
 
-#define ROOTPATH "./"          // path where the file-search starts from
+#define ROOTPATH "./"             
 
-#define R "./testDirectory"
-
-#define MAX_PATH_SIZE 1028      // in characters
-#define MAX_SEARCH_ITEMS 150   // set to something smart, like OPEN_MAX
-#define MAX_DIRECTORIES 50              // TODO: delete if recursive works
+#define MAX_PATH_SIZE 1028              // in characters
+#define MAX_SEARCH_ITEMS 150            // set to something smart, like OPEN_MAX
 
 
 typedef enum fileType {
@@ -25,11 +22,24 @@ typedef enum fileType {
     UNKNOWN                 // ignore for now 
 } fileType;
 
+typedef enum operation {
+    SEARCH,
+    REPLACE
+} operation;
+
+typedef struct options {
+    bool capitalization;
+    bool spacing;
+    char* search_term;
+    char* replacement_term;
+} options;
+
 typedef struct searchItem {
     ino_t st_ino;            // File serial number defined in <sys/stat.h>
     char* path;              // 
     fileType type;           // enum defined above 
-    bool success;            // initialize to false 
+    bool success;            // initialize to false - success for search 
+    bool altered;            // initilaize to false 
     char* res_preview;
 } searchItem;
 
@@ -39,24 +49,37 @@ typedef struct searchIndex {
 } searchIndex;
 
 typedef struct searchStats {
-    uint64_t f_count;            // number of files searched 
-    uint64_t d_count;            // number of directories searched
+    uint64_t file_count;             // number of files searched 
+    uint64_t dir_count;              // number of directories searched
+    uint64_t search_count;           // number of successful searches
+    uint64_t alter_count;            // number of files altered 
 } searchStats;
 
-
-fileType FileType(mode_t m);
-fileType getFileStatus (const char* path);
-//int parseDirectory(const char* path ,struct searchIndex* index, struct dirIndex* d_index);
-
-//int parseDirectory2(const char* path ,struct searchIndex* index, struct dirIndex* d_index);
 
 int addToSearchIndex(struct searchItem item, struct searchIndex* index);
 
 void getItemPath(const char* path, const char* item_name, char* item_path,  fileType type);
+void recursive(char *basePath, struct searchIndex* index);
+
 struct searchStats createSearchStats();
 struct searchIndex createSearchIndex(struct searchItem* item);
 struct searchItem createSearchItem(ino_t serial, char* path, fileType type);
 
-void recursive(char *basePath, struct searchIndex* index);
+fileType FileType(mode_t m);
+fileType getFileStatus(const char* path);
+
+void parseFile(const char *filename, char* search_term, void (*func)());
+
+// search / replace = (both) => (
+//    capitalize matters: yes/no                     (default: exact capitalization) 
+//    spaces (term must stand seprarated): yes/no    (default: yes)          
+//  ) 
+void parseIndex(struct searchIndex* index, enum operation operation, struct options options);
+
+void dummy(int i);
 
 #endif
+
+
+
+
