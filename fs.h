@@ -36,7 +36,7 @@ typedef struct options {
 
 typedef struct searchItem {
     ino_t st_ino;            // File serial number defined in <sys/stat.h>
-    char* path;                                                   // changed from char*
+    char path[MAX_PATH_SIZE];     // changed from char*
     fileType type;           // enum defined above 
     bool success;            // initialize to false - success for search 
     bool altered;            // initilaize to false 

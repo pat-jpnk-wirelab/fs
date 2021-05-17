@@ -19,8 +19,10 @@ int main(void) {
     index.size = 0;
     
     recursive(ROOTPATH,&index);
-    printf("$$$ %llu \n", index.size);
-    //printIndex(&index);
+
+    for(uint64_t i = 0; i < index.size; i++) {
+        printf("$$$ %s \n", index.items[i].path);
+    }
 
     return 0;
 }
@@ -33,11 +35,14 @@ void printIndex(struct searchIndex* index) {
 
 
 void addToIndex(struct searchIndex* si, const char* item_path, ino_t serial, fileType type) {
-    searchItem s_i = si->items[si->size];
-    strcpy(s_i.path, item_path);                       // make const (2nd)
-    s_i.success = false;                               // default false at this point, no search attempted thus far
-    s_i.st_ino = serial;
-    s_i.type = type;
+    //searchItem s_i = si->items[si->size];
+    strcpy(si->items[si->size].path, item_path);                       // make const (2nd)
+    //si->items[si->size].success = false;                               // default false at this point, no search attempted thus far
+    //si->items[si->size].st_ino = serial;
+    //si->items[si->size].type = type;
+    //printf("NUM: %llu\n", si->size++);
+    //printf(">> %s\n", si->items[si->size].path);
+    si->size = si->size + 1;
 }
 
 void recursive(char *path, struct searchIndex* index) {
@@ -59,17 +64,14 @@ void recursive(char *path, struct searchIndex* index) {
 
             switch(type) {
                 case REGULAR:
-                    //addToIndex(&(index->items[index->size]), item_path, dp->d_ino, type);
-                    index->size++;
+                    addToIndex(index, item_path, dp->d_ino, type);
                     break;
                 
                 case DIREC:
-                    /**
                     if ((strcmp(item_path, "./.") != 0 && strcmp(item_path, "./..") != 0) && strcmp(item_path, "./.git") != 0 && (int) type == 4) {
                             recursive(item_path2, index);
                         }
                     break;
-                    **/
                 default:
                     break;
             }
