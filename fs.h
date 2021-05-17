@@ -36,7 +36,7 @@ typedef struct options {
 
 typedef struct searchItem {
     ino_t st_ino;            // File serial number defined in <sys/stat.h>
-    char* path;              // 
+    char* path;                                                   // changed from char*
     fileType type;           // enum defined above 
     bool success;            // initialize to false - success for search 
     bool altered;            // initilaize to false 
@@ -44,7 +44,7 @@ typedef struct searchItem {
 } searchItem;
 
 typedef struct searchIndex {
-    searchItem* items;
+    searchItem items[MAX_SEARCH_ITEMS];
     uint64_t size;
 } searchIndex;
 
@@ -56,13 +56,11 @@ typedef struct searchStats {
 } searchStats;
 
 
-int addToSearchIndex(struct searchItem item, struct searchIndex* index);
 
 void getItemPath(const char* path, const char* item_name, char* item_path,  fileType type);
 void recursive(char *basePath, struct searchIndex* index);
 
 struct searchStats createSearchStats();
-struct searchIndex createSearchIndex(struct searchItem* item);
 struct searchItem createSearchItem(ino_t serial, char* path, fileType type);
 
 fileType FileType(mode_t m);
@@ -77,6 +75,9 @@ void parseFile(const char *filename, char* search_term, void (*func)());
 void parseIndex(struct searchIndex* index, enum operation operation, struct options options);
 
 void dummy(int i);
+
+void _search(struct searchItem* item, struct options options);
+void _replace(struct searchItem* item, struct options options);
 
 #endif
 
