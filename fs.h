@@ -61,7 +61,7 @@ void getItemPath(const char* path, const char* item_name, char* item_path,  file
 void recursive(char *basePath, struct searchIndex* index);
 
 struct searchStats createSearchStats();
-struct searchItem createSearchItem(ino_t serial, char* path, fileType type);
+void createSearchItem(struct searchItem* item, ino_t serial, char* path, fileType type);
 
 fileType FileType(mode_t m);
 fileType getFileStatus(const char* path);

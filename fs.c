@@ -20,7 +20,13 @@ int main(void) {
 
     recursive(ROOTPATH,&index);
     
-    printf("EX: %s \n", index.items[2].path);
+
+    int i = 0;
+
+    while(i < 15) {
+        printf("FML: %s\n", index.items[i].path);
+        i++;
+    }
 
     return 0;
 }
@@ -47,16 +53,31 @@ void recursive(char *path, struct searchIndex* index) {
             switch(type) {
                 case REGULAR:
                     ;
-                    struct searchItem item = createSearchItem(dp->d_ino,item_path,type);
-                    index->items[2] = item;
+
+                    //index->items[index->size].path = item_path;  // item_path is correct, DOES NOT GET ASSGINED CORRECTLY
+                    //struct searchItem fsi = index->items[index->size];
+                    createSearchItem(&(index->items[index->size]), dp->d_ino, item_path, type);
+
+                    // createSearchItem(struct searchItem* item, ino_t serial, char* path, fileType type)
+
+
+                    //printf("%s  -----  %s       for num: %llu\n", item_path, index->items[index->size].path, index->size);
+
                     index->size++;
-                    printf("path %llu \n", index->size);
+
+                    printf("PW: %s\n", item_path);
+
+                   //printf("pathX: %s \n", index->items[index->size].path);
+                    
+                  //  printf("size: %llu \n", index->size);
+                  //  printf("Finished switch REGULAR\n");
                     break;
                 
                 case DIREC:
                     if ((strcmp(item_path, "./.") != 0 && strcmp(item_path, "./..") != 0) && strcmp(item_path, "./.git") != 0 && (int) type == 4) {
                             recursive(item_path2, index);
                         }
+                    printf("Finished switch DIREC\n");
                     break;
                 default:
                     break;
@@ -117,14 +138,11 @@ fileType getFileStatus (const char* path) {
  * @param
  * @return struct searchItem - item
  **/ 
-struct searchItem createSearchItem(ino_t serial, char* path, fileType type) {               
-    struct searchItem item;
-    item.path = path;
-    item.success = false;    // default false at this point, no search attempted thus far
-    item.st_ino = serial;
-    item.type = type;
-
-    return item;
+void createSearchItem(struct searchItem* item, ino_t serial, char* path, fileType type) {               
+    item->path = path;
+    item->success = false;    // default false at this point, no search attempted thus far
+    item->st_ino = serial;
+    item->type = type;
 }
 
 
