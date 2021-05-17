@@ -17,20 +17,28 @@ int main(void) {
 
     struct searchIndex index;
     index.size = 0;
-
-    recursive(ROOTPATH,&index);
     
-
-    int i = 0;
-
-    while(i < 15) {
-        printf("FML: %s\n", index.items[i].path);
-        i++;
-    }
+    recursive(ROOTPATH,&index);
+    printf("$$$ %llu \n", index.size);
+    //printIndex(&index);
 
     return 0;
 }
 
+void printIndex(struct searchIndex* index) {
+    for(uint64_t k = index->size; k > 0; k--) {
+        printf("RES: %llu > %s", k, index->items[k].path);
+    }
+}
+
+
+void addToIndex(struct searchIndex* si, const char* item_path, ino_t serial, fileType type) {
+    searchItem s_i = si->items[si->size];
+    strcpy(s_i.path, item_path);                       // make const (2nd)
+    s_i.success = false;                               // default false at this point, no search attempted thus far
+    s_i.st_ino = serial;
+    s_i.type = type;
+}
 
 void recursive(char *path, struct searchIndex* index) {
     struct dirent *dp;
@@ -38,47 +46,30 @@ void recursive(char *path, struct searchIndex* index) {
 
     while ((dp = readdir(dir)) != NULL) {
 
-        char item_path[MAX_PATH_SIZE] = "";
-        char item_path2[MAX_PATH_SIZE] = "";
+        char item_path[MAX_PATH_SIZE] = "";             // pathname 
+        char item_path2[MAX_PATH_SIZE] = "";            // gets '/' added if directory, used for next recursion
+        
         const char* item_name = dp->d_name;
 
-        // filter out standard directories
-        if(strcmp(item_name, ".") != 0 && strcmp(item_name, "..") != 0) {
+        if(strcmp(item_name, ".") != 0 && strcmp(item_name, "..") != 0) {               // gets also checked in getItemPath();
             strcat(item_path,path);                                                                  
             strcat(item_path, item_name);
-        
             fileType type = getFileStatus(item_path);
             getItemPath(path, item_name, &item_path2[0], type);
-        
+
             switch(type) {
                 case REGULAR:
-                    ;
-
-                    //index->items[index->size].path = item_path;  // item_path is correct, DOES NOT GET ASSGINED CORRECTLY
-                    //struct searchItem fsi = index->items[index->size];
-                    createSearchItem(&(index->items[index->size]), dp->d_ino, item_path, type);
-
-                    // createSearchItem(struct searchItem* item, ino_t serial, char* path, fileType type)
-
-
-                    //printf("%s  -----  %s       for num: %llu\n", item_path, index->items[index->size].path, index->size);
-
+                    //addToIndex(&(index->items[index->size]), item_path, dp->d_ino, type);
                     index->size++;
-
-                    printf("PW: %s\n", item_path);
-
-                   //printf("pathX: %s \n", index->items[index->size].path);
-                    
-                  //  printf("size: %llu \n", index->size);
-                  //  printf("Finished switch REGULAR\n");
                     break;
                 
                 case DIREC:
+                    /**
                     if ((strcmp(item_path, "./.") != 0 && strcmp(item_path, "./..") != 0) && strcmp(item_path, "./.git") != 0 && (int) type == 4) {
                             recursive(item_path2, index);
                         }
-                    printf("Finished switch DIREC\n");
                     break;
+                    **/
                 default:
                     break;
             }
@@ -139,7 +130,8 @@ fileType getFileStatus (const char* path) {
  * @return struct searchItem - item
  **/ 
 void createSearchItem(struct searchItem* item, ino_t serial, char* path, fileType type) {               
-    item->path = path;
+    //item->path = path;
+    strcpy(item->path, path);
     item->success = false;    // default false at this point, no search attempted thus far
     item->st_ino = serial;
     item->type = type;

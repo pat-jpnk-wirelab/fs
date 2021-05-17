@@ -44,7 +44,7 @@ typedef struct searchItem {
 } searchItem;
 
 typedef struct searchIndex {
-    searchItem items[MAX_SEARCH_ITEMS];
+    struct searchItem items[MAX_SEARCH_ITEMS];
     uint64_t size;
 } searchIndex;
 
@@ -75,6 +75,8 @@ void parseFile(const char *filename, char* search_term, void (*func)());
 void parseIndex(struct searchIndex* index, enum operation operation, struct options options);
 
 void dummy(int i);
+
+void printIndex(struct searchIndex* index);
 
 void _search(struct searchItem* item, struct options options);
 void _replace(struct searchItem* item, struct options options);
