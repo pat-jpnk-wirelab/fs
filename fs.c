@@ -8,8 +8,6 @@
 #include <limits.h>
 #include <errno.h>  // defines errno
 		            // errno gets set by opendir() from dirent.h
-
-
 #include <sys/stat.h>
 #include <stdlib.h>
 
@@ -17,32 +15,31 @@ int main(void) {
 
     struct searchIndex index;
     index.size = 0;
-    
     recursive(ROOTPATH,&index);
-
+    
+    printIndex(&index);
+    
+    /**
     for(uint64_t i = 0; i < index.size; i++) {
         printf("$$$ %s \n", index.items[i].path);
-    }
+    }**/
 
     return 0;
 }
 
 void printIndex(struct searchIndex* index) {
-    for(uint64_t k = index->size; k > 0; k--) {
-        printf("RES: %llu > %s", k, index->items[k].path);
+    for(uint64_t k = (index->size - 1); k > 0; k--) {
+        printf("RES: %llu > %s > %llu \n", k, index->items[k].path, index->items[k].st_ino);
     }
 }
 
 
 void addToIndex(struct searchIndex* si, const char* item_path, ino_t serial, fileType type) {
-    //searchItem s_i = si->items[si->size];
-    strcpy(si->items[si->size].path, item_path);                       // make const (2nd)
-    //si->items[si->size].success = false;                               // default false at this point, no search attempted thus far
-    //si->items[si->size].st_ino = serial;
-    //si->items[si->size].type = type;
-    //printf("NUM: %llu\n", si->size++);
-    //printf(">> %s\n", si->items[si->size].path);
-    si->size = si->size + 1;
+    strcpy(si->items[si->size].path, item_path);                       
+    si->items[si->size].success = false;                          
+    si->items[si->size].st_ino = serial;
+    si->items[si->size].type = type;
+    si->size++;
 }
 
 void recursive(char *path, struct searchIndex* index) {
@@ -50,10 +47,8 @@ void recursive(char *path, struct searchIndex* index) {
     DIR *dir = opendir(path);
 
     while ((dp = readdir(dir)) != NULL) {
-
         char item_path[MAX_PATH_SIZE] = "";             // pathname 
         char item_path2[MAX_PATH_SIZE] = "";            // gets '/' added if directory, used for next recursion
-        
         const char* item_name = dp->d_name;
 
         if(strcmp(item_name, ".") != 0 && strcmp(item_name, "..") != 0) {               // gets also checked in getItemPath();
@@ -66,7 +61,6 @@ void recursive(char *path, struct searchIndex* index) {
                 case REGULAR:
                     addToIndex(index, item_path, dp->d_ino, type);
                     break;
-                
                 case DIREC:
                     if ((strcmp(item_path, "./.") != 0 && strcmp(item_path, "./..") != 0) && strcmp(item_path, "./.git") != 0 && (int) type == 4) {
                             recursive(item_path2, index);
