@@ -2,31 +2,40 @@
 #include <string.h>
 #include <dirent.h>
 #include "fs.h"
+#include "operations.h"
 #include <libgen.h>
 #include <dirent.h>
 #include <sys/types.h>
 #include <limits.h>
-#include <errno.h>  // defines errno
-		            // errno gets set by opendir() from dirent.h
+#include <errno.h>      // defines errno
+		                // errno gets set by opendir() from dirent.h
 #include <sys/stat.h>
 #include <stdlib.h>
 
+
+
+// make check function to ignore certain folders 
+// ".", "..", ".gitignore"
+
+
 int main(void) {
-    struct searchIndex index;
-    index.size = 0;
-    recursive(ROOTPATH,&index);         // searchIndex populated 
-    //printIndex(&index);
+    searchStats stats = initSearchStats();
     
     struct options options;
+    options.function = SEARCH;
+
+    struct searchIndex index;
+    index.size = 0;
+    
+    recursive(ROOTPATH, &index, &stats);         // searchIndex populated when this finishes
+    
+    //printIndex(&index);
+    
     parseIndex(&index, &options);
-
+    
+    //printStats(&stats);
+    
     return 0;
-}
-
-void printIndex(struct searchIndex* index) {
-    for(uint64_t k = (index->size - 1); k > 0; k--) {
-        printf("RES: %llu > %s > %llu \n", k, index->items[k].path, index->items[k].st_ino);
-    }
 }
 
 void addToIndex(struct searchIndex* si, const char* item_path, ino_t serial, fileType type) {
@@ -37,7 +46,7 @@ void addToIndex(struct searchIndex* si, const char* item_path, ino_t serial, fil
     si->size++;
 }
 
-void recursive(char *path, struct searchIndex* index) {
+void recursive(char *path, struct searchIndex* index, struct searchStats* stats) {
     struct dirent *dp;
     DIR *dir = opendir(path);
 
@@ -54,11 +63,14 @@ void recursive(char *path, struct searchIndex* index) {
 
             switch(type) {
                 case REGULAR:
+                    stats->file_count++;                                // update stats
+                    printf("COUNTING: %s\n", item_name);
                     addToIndex(index, item_path, dp->d_ino, type);
                     break;
                 case DIREC:
                     if ((strcmp(item_path, "./.") != 0 && strcmp(item_path, "./..") != 0) && strcmp(item_path, "./.git") != 0 && (int) type == 4) {
-                        recursive(item_path2, index);
+                        stats->dir_count++;                             // update stats
+                        recursive(item_path2, index, stats);
                     }
                     break;
                 default:
@@ -69,12 +81,8 @@ void recursive(char *path, struct searchIndex* index) {
     closedir(dir);
 }
 
-/**
- * from stackoverflow (https://stackoverflow.com/questions/56212434/how-to-know-a-files-type)
- * @param m | st_mode attribute of struct stat
- * @retuns char 
-**/
-fileType FileType (mode_t m) {
+
+fileType FileType (mode_t m) {              // @param m | st_mode attribute of struct stat
     switch (m & S_IFMT) {                   //bitwise AND to determine file type
         case S_IFSOCK:  return SOCKET;      //socket
         case S_IFLNK:   return SYMLINK;     //symbolic link
@@ -87,10 +95,7 @@ fileType FileType (mode_t m) {
     }
 }
 
-/**
- * @param pathname of file 
- * @returns fileType
-**/
+
 fileType getFileStatus (const char* path) {
     struct stat buff;
     struct stat* buffer = &buff;
@@ -107,11 +112,7 @@ fileType getFileStatus (const char* path) {
     return fileType;
 }
 
-
-/**
- * @param
- * @return struct searchItem - item
- **/ 
+ 
 void createSearchItem(struct searchItem* item, ino_t serial, char* path, fileType type) {
     strcpy(item->path, path);
     item->success = false;    // default false at this point, no search attempted thus far
@@ -120,10 +121,6 @@ void createSearchItem(struct searchItem* item, ino_t serial, char* path, fileTyp
 }
 
 
-/**
- * @param void
- * @return struct searchStats - new struct to hold search statistics
-**/
 struct searchStats initSearchStats() {
     struct searchStats stats;
     stats.file_count = 0;
@@ -158,7 +155,8 @@ void parseIndex(struct searchIndex* index, struct options* options) {
             parseFile(_search,index,*options,index->size);
             break;
         case REPLACE:
-            parseFile(_replace, index,*options, index->size);
+            printf("REPLACE!\n");
+            parseFile(_replace,index,*options, index->size);
             break;
         default:
             break;
@@ -166,27 +164,14 @@ void parseIndex(struct searchIndex* index, struct options* options) {
 }
 
 
-// if operation: SEARCH -> _search function = options[bool capitalization;, bool spacing, char* search_term;]
-void _search(struct searchItem* item, struct options options) {
-    printf("Hello World from search\n");
-    /**
-    FILE *fp = fopen(item->path, "r");
-    uint32_t c;
-
-    while(true) {
-        c = fgetc(fp);
-        if(feof(fp)){
-            break;
-        }
-        printf("%c", c);
+// ############## helper #################
+void printIndex(struct searchIndex* index) {
+    for(uint64_t k = (index->size - 1); k > 0; k--) {
+        printf("RES: %llu > %s > %llu \n", k, index->items[k].path, index->items[k].st_ino);
     }
-    fclose(fp);
-    **/
 }
 
-
-// if operation: REPLACE -> _replace function = options[bool capitalization;, bool spacing, char* search_term; char* replacement_term]
-void _replace(struct searchItem* item, struct options options) {
-    printf("Hello world from replace");
-    return;
+void printStats(struct searchStats* stats) {
+    printf("\nstats:\nf: %llu\nd: %llu\ns: %llu\na: %llu\n", stats->file_count, stats->dir_count, stats->search_count, stats->alter_count);
 }
+// ######################################## 

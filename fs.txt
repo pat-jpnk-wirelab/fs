@@ -5,8 +5,6 @@ https://github.com/bji/libs3 - use this for amazon S3
 
 TODO:
 
-- USE fileStatusRes TO REFACTOR getFileStatus();
-
 - check what should be const 
 
 - analyze where to make checks (./..) or (./.git / .git)
@@ -27,6 +25,12 @@ TODO:
             - replace a term with another term in all files (w/ options about capturing as above)
             - provide options to restrict files searched
 
+
+
+- create static library from operations.c
+
+!!!!!!! - starting directory itself is not counted in searchStats
+!!!!!! - function FileType() from stackoverflow (https://stackoverflow.com/questions/56212434/how-to-know-a-files-type)
 
 
 ----------------------------------------------------------------------

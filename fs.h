@@ -8,7 +8,7 @@
 #define ROOTPATH "./"             
 #define MAX_PATH_SIZE 1024              // in characters
 #define MAX_SEARCH_ITEMS 150            // set to something smart, like OPEN_MAX
-#define MAX_PREVIEW_SIZE                // ????
+#define MAX_PREVIEW_SIZE 512               // ????
 
 typedef enum fileType {
     SOCKET,
@@ -36,12 +36,12 @@ typedef struct options {
 } options;
 
 typedef struct searchItem {
-    ino_t st_ino;                 // File serial number defined in <sys/stat.h>
-    char path[MAX_PATH_SIZE];     // changed from char*
-    fileType type;                // enum defined above 
-    bool success;                 // initialize to false - success for search 
-    bool altered;                 // initilaize to false 
-    char* res_preview;            // holds preview if search successful
+    ino_t st_ino;                           // File serial number defined in <sys/stat.h>
+    char path[MAX_PATH_SIZE];               // changed from char*
+    fileType type;                          // enum defined above 
+    bool success;                           // initialize to false - success for search 
+    bool altered;                           // initilaize to false 
+    char res_preview[MAX_PREVIEW_SIZE];     // holds preview if search successful
 } searchItem;
 
 typedef struct searchIndex {
@@ -64,10 +64,9 @@ fileType getFileStatus(const char* path);
 void parseFile(operation op, struct searchIndex* index, struct options options, uint64_t size);
 void parseIndex(struct searchIndex* index, struct options* options);
 void printIndex(struct searchIndex* index);
-void _search(struct searchItem* item, struct options options);
-void _replace(struct searchItem* item, struct options options);
 void getItemPath(const char* path, const char* item_name, char* item_path,  fileType type);
-void recursive(char *basePath, struct searchIndex* index);
+void recursive(char *basePath, struct searchIndex* index, struct searchStats* stats);
 void createSearchItem(struct searchItem* item, ino_t serial, char* path, fileType type);
+void printStats(struct searchStats* stats);
 
 #endif
