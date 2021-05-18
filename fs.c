@@ -92,24 +92,18 @@ fileType FileType (mode_t m) {
  * @returns fileType
 **/
 fileType getFileStatus (const char* path) {
-
-        //struct stat* buffer = malloc(sizeof(stat)); 
     struct stat buff;
     struct stat* buffer = &buff;
+    fileType fileType;
 
-    int fileStatusRes = stat(path,buffer); // indicates whether it was gotten successfully 
-                                           // success = 0, failure = -1
-    switch(fileStatusRes) {
-        case 0:
-            //printf("success\n");
-            break; 
-        default:
-            printf("fail\n");
-            break;
+    int fileStatusRes = stat(path,buffer); // indicates whether it was gotten successfully => success = 0, failure = -1
+    
+    if(fileStatusRes == -1) {
+        fileType = UNKNOWN;
+    } else {
+        fileType = FileType(buffer->st_mode);
     }
-
-    fileType fileType = FileType(buffer->st_mode);
-        //free(buffer);
+    
     return fileType;
 }
 
@@ -118,8 +112,7 @@ fileType getFileStatus (const char* path) {
  * @param
  * @return struct searchItem - item
  **/ 
-void createSearchItem(struct searchItem* item, ino_t serial, char* path, fileType type) {               
-    //item->path = path;
+void createSearchItem(struct searchItem* item, ino_t serial, char* path, fileType type) {
     strcpy(item->path, path);
     item->success = false;    // default false at this point, no search attempted thus far
     item->st_ino = serial;
@@ -165,6 +158,7 @@ void parseIndex(struct searchIndex* index, struct options* options) {
             parseFile(_search,index,*options,index->size);
             break;
         case REPLACE:
+            parseFile(_replace, index,*options, index->size);
             break;
         default:
             break;
@@ -175,8 +169,6 @@ void parseIndex(struct searchIndex* index, struct options* options) {
 // if operation: SEARCH -> _search function = options[bool capitalization;, bool spacing, char* search_term;]
 void _search(struct searchItem* item, struct options options) {
     printf("Hello World from search\n");
-    // capitalization, spacing, search_term
-    
     /**
     FILE *fp = fopen(item->path, "r");
     uint32_t c;
@@ -189,7 +181,6 @@ void _search(struct searchItem* item, struct options options) {
         printf("%c", c);
     }
     fclose(fp);
-
     **/
 }
 
