@@ -10,7 +10,6 @@
 
 
 // opens files in read only mode
-
 // if operation: SEARCH -> _search function = options[bool capitalization;, bool spacing, char* search_term;]
 void _search(struct searchItem* item, struct options options) {
     printf("Hello World from search\n");

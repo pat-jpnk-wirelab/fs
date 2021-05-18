@@ -1,7 +1,4 @@
-FS
-
-
-https://github.com/bji/libs3 - use this for amazon S3
+#FS
 
 TODO:
 
@@ -9,86 +6,51 @@ TODO:
 
 - analyze where to make checks (./..) or (./.git / .git)
 
-- use function pointer to function that applies to all searchIndex items 
+- use and check for limitations like "OPENMAX" limits.h
 
-    (- enable user to create backups of folders) 
-
-    (- centralize exclusion file)
-
-    (- create fs.macro to define user macros)
-
+- add failure checks!!!  (malloc returns NULL failure, check: fopen, opendir, readdir)
 
 - add commandline arguments / functionality
-
         fs options:
             - list all files where a search_term occurs (w/wo snippets, w/ rules about search params: 'spaces, capitalization')
             - replace a term with another term in all files (w/ options about capturing as above)
             - provide options to restrict files searched
 
-
+- what to do with simlinks
 
 - create static library from operations.c
 
-!!!!!!! - starting directory itself is not counted in searchStats
-!!!!!! - function FileType() from stackoverflow (https://stackoverflow.com/questions/56212434/how-to-know-a-files-type)
+- write _search function
 
+- create dedicated functions for stats (increment)
 
 ----------------------------------------------------------------------
 
-1) find all occurences of a snippet of text in all files in current folder and all files contained in all folders contained in the main current folder recursively,
-   display the results nicely
+!!!!!! - starting directory itself is not counted in searchStats
+!!!!!! - function FileType() from stackoverflow (https://stackoverflow.com/questions/56212434/how-to-know-a-files-type)
+!!!!!! - TERMINOLOGY: file or stream is mostly called 'item' in this program
+!!!!!! - filenames "." and ".." are ignored in recursive(...) by default
 
+----------------------------------------------------------------------
+
+nice to have:
 
 - check using valgrind
-
-- add commandline options for customization (getopt())
-
-- use and check for limitations like "OPENMAX" limits.h
-
-- report statistics on search
-
-- what to do with simlinks
-
-- add failure checks!!!  (malloc returns NULL failure, check: fopen, opendir, readdir)
-
-
-
-
-
-
-- TERMINOLOGY: file or stream is mostly called 'item' in this program
+- https://github.com/bji/libs3 - use this for amazon S3
+- enable user to create backups of folders 
+- centralize exclusion file
+- create fs.macro to define user macros
 
 
 materials:
-
 https://pubs.opengroup.org/onlinepubs/7908799/xsh/dirent.h.html
 
 
-
-
+1) find all occurences of a snippet of text in all files in current folder and all files contained in all folders contained in the main current folder recursively,
+   display the results nicely
 
 - interpret command 
 - index all ascii files 
 - parse all files for search parameter 
 - save information for successful searches 
 - output search results [summary, stats, nothing]
-
-
-
-###################################################################
-
-
-    /**
-    
-    char k[] = "/tier/mensch/Hello.v";
-
-    int64_t num = 313432;
-
-    // limits.h OPEN_MAX :  Maximum number of files that one process can have open at any one time. Minimum Acceptable Value: 20	
-    printf("open max: %d\n", OPEN_MAX);
-
-    printf("%s\n",basename(k)); // filename
-    printf("%s\n", dirname(k)); // pathname
-
-    **/
-    // ###########################################

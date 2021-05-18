@@ -18,6 +18,12 @@
 // ".", "..", ".gitignore"
 
 
+// ".", ".."  ignored by default 
+
+
+// other file names /  directory names / file extensions  => can be manually ignored
+
+
 int main(void) {
     searchStats stats = initSearchStats();
     
@@ -95,7 +101,6 @@ fileType FileType (mode_t m) {              // @param m | st_mode attribute of s
     }
 }
 
-
 fileType getFileStatus (const char* path) {
     struct stat buff;
     struct stat* buffer = &buff;
@@ -111,7 +116,6 @@ fileType getFileStatus (const char* path) {
     
     return fileType;
 }
-
  
 void createSearchItem(struct searchItem* item, ino_t serial, char* path, fileType type) {
     strcpy(item->path, path);
@@ -119,7 +123,6 @@ void createSearchItem(struct searchItem* item, ino_t serial, char* path, fileTyp
     item->st_ino = serial;
     item->type = type;
 }
-
 
 struct searchStats initSearchStats() {
     struct searchStats stats;
@@ -162,7 +165,6 @@ void parseIndex(struct searchIndex* index, struct options* options) {
             break;
     }
 }
-
 
 // ############## helper #################
 void printIndex(struct searchIndex* index) {
