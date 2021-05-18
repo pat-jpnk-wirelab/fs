@@ -50,10 +50,10 @@ typedef struct searchIndex {
 } searchIndex;
 
 typedef struct searchStats {
-    uint64_t file_count;             // number of files searched 
-    uint64_t dir_count;              // number of directories searched
-    uint64_t search_count;           // number of successful searches
-    uint64_t alter_count;            // number of files altered 
+    uint64_t file_count;                    // number of files searched 
+    uint64_t dir_count;                     // number of directories searched
+    uint64_t search_count;                  // number of successful searches
+    uint64_t alter_count;                   // number of files altered 
 } searchStats;
 
 typedef void (*operation) (struct searchItem*, struct options);
