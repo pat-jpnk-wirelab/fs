@@ -1,5 +1,8 @@
 FS
 
+
+https://github.com/bji/libs3 - use this for amazon S3
+
 TODO:
 
 - USE fileStatusRes TO REFACTOR getFileStatus();

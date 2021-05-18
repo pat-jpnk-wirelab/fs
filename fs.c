@@ -43,7 +43,7 @@ void recursive(char *path, struct searchIndex* index) {
 
     while ((dp = readdir(dir)) != NULL) {
         char item_path[MAX_PATH_SIZE] = "";                                             // pathname 
-        char item_path2[MAX_PATH_SIZE] = "";                                            // gets '/' added if directory, used for next recursion
+        char item_path2[MAX_PATH_SIZE] = "";                                            // gets '/' added if directory, used for next recursion // TODO: add better name
         const char* item_name = dp->d_name;
 
         if(strcmp(item_name, ".") != 0 && strcmp(item_name, "..") != 0) {               // gets also checked in getItemPath();
