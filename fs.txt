@@ -4,13 +4,9 @@ TODO:
 
 - USE fileStatusRes TO REFACTOR getFileStatus();
 
-- EXPAND STATS: show which files were altered
-
 - check what should be const 
 
 - analyze where to make checks (./..) or (./.git / .git)
-
-- replace "parse" in name swith a better term 
 
 - use function pointer to function that applies to all searchIndex items 
 
@@ -19,15 +15,6 @@ TODO:
     (- centralize exclusion file)
 
     (- create fs.macro to define user macros)
-
-
-
-- create parseFile(char* search_term, struct searchItem* item);
-
-            define search and replacement actions: 
-                - add options to parseFile or separate functions ??
-                - first search, then replacement
-
 
 
 - add commandline arguments / functionality

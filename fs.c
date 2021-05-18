@@ -12,17 +12,13 @@
 #include <stdlib.h>
 
 int main(void) {
-
     struct searchIndex index;
     index.size = 0;
-    recursive(ROOTPATH,&index);
+    recursive(ROOTPATH,&index);         // searchIndex populated 
+    //printIndex(&index);
     
-    printIndex(&index);
-    
-    /**
-    for(uint64_t i = 0; i < index.size; i++) {
-        printf("$$$ %s \n", index.items[i].path);
-    }**/
+    struct options options;
+    parseIndex(&index, &options);
 
     return 0;
 }
@@ -32,7 +28,6 @@ void printIndex(struct searchIndex* index) {
         printf("RES: %llu > %s > %llu \n", k, index->items[k].path, index->items[k].st_ino);
     }
 }
-
 
 void addToIndex(struct searchIndex* si, const char* item_path, ino_t serial, fileType type) {
     strcpy(si->items[si->size].path, item_path);                       
@@ -47,8 +42,8 @@ void recursive(char *path, struct searchIndex* index) {
     DIR *dir = opendir(path);
 
     while ((dp = readdir(dir)) != NULL) {
-        char item_path[MAX_PATH_SIZE] = "";             // pathname 
-        char item_path2[MAX_PATH_SIZE] = "";            // gets '/' added if directory, used for next recursion
+        char item_path[MAX_PATH_SIZE] = "";                                             // pathname 
+        char item_path2[MAX_PATH_SIZE] = "";                                            // gets '/' added if directory, used for next recursion
         const char* item_name = dp->d_name;
 
         if(strcmp(item_name, ".") != 0 && strcmp(item_name, "..") != 0) {               // gets also checked in getItemPath();
@@ -63,16 +58,14 @@ void recursive(char *path, struct searchIndex* index) {
                     break;
                 case DIREC:
                     if ((strcmp(item_path, "./.") != 0 && strcmp(item_path, "./..") != 0) && strcmp(item_path, "./.git") != 0 && (int) type == 4) {
-                            recursive(item_path2, index);
-                        }
+                        recursive(item_path2, index);
+                    }
                     break;
                 default:
                     break;
             }
-
         }
     } 
-    
     closedir(dir);
 }
 
@@ -138,13 +131,14 @@ void createSearchItem(struct searchItem* item, ino_t serial, char* path, fileTyp
  * @param void
  * @return struct searchStats - new struct to hold search statistics
 **/
-struct searchStats createSearchStats() {
+struct searchStats initSearchStats() {
     struct searchStats stats;
     stats.file_count = 0;
     stats.dir_count = 0;
+    stats.search_count = 0;
+    stats.alter_count = 0;
     return stats;
 }
-
 
 /**
  * @param const char* path      - current base path
@@ -158,55 +152,33 @@ void getItemPath(const char* path, const char* item_name, char* item_path, fileT
         strcat(item_path, "/");
     }                                                         
 }
+ 
+void parseFile(operation op, struct searchIndex* index, struct options options, uint64_t size) {
+    for (uint64_t i = 0; i < size; i++) {
+        op(&(index->items[i]), options);
+    }
+}
 
-/**
-void parseFile(struct searchIndex* index, struct options search_term, void (*func)(struct searchItem* item, struct options options)) {
-
-} **/
-
-void parseIndex(struct searchIndex* index, enum operation operation, struct options options) {
-    uint64_t len = index->size;
-    uint64_t i = 0;
-
-    printf("ONE\n");
-    switch(operation) {
+void parseIndex(struct searchIndex* index, struct options* options) {
+    switch(options->function) {
         case SEARCH:
-            printf("TWO %llu\n", len);
-            for(i; i < len; i++) {
-                
-                //printf("ID: %s \n",index->items[i].path);
-                //_search(&index->items[i], options);
-            }
+            parseFile(_search,index,*options,index->size);
             break;
         case REPLACE:
-            for(i; i < len; i++) {
-                _replace(&index->items[i], options);
-            }
+            break;
+        default:
             break;
     }
 }
 
 
-
-void dummy(int i) {
-    printf("FILE PARSED!!\n");
-}
-
-
-
-
 // if operation: SEARCH -> _search function = options[bool capitalization;, bool spacing, char* search_term;]
-
-
 void _search(struct searchItem* item, struct options options) {
-
+    printf("Hello World from search\n");
+    // capitalization, spacing, search_term
     
-    printf("HI");
-
-    //const char* filename = item->path;
-
-    printf("%s \n", item->path);
-
+    
+    /**
     FILE *fp = fopen(item->path, "r");
     uint32_t c;
 
@@ -218,12 +190,13 @@ void _search(struct searchItem* item, struct options options) {
         printf("%c", c);
     }
     fclose(fp);
+
+    **/
 }
 
 
 // if operation: REPLACE -> _replace function = options[bool capitalization;, bool spacing, char* search_term; char* replacement_term]
-
-
 void _replace(struct searchItem* item, struct options options) {
+    printf("Hello world from replace");
     return;
 }
