@@ -43,8 +43,6 @@ int main(void) {
     return 0;
 }
 
-
-
 void addToIndex(struct searchIndex* si, const char* item_path, ino_t serial, fileType type) {
     strcpy(si->items[si->size].path, item_path);                       
     si->items[si->size].success = false;                          

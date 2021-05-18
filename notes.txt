@@ -6,8 +6,6 @@ TODO:
 
 - FIX item_path mess in recursive()
 
-- analyze where to make checks (./..) or (./.git / .git)
-
 - use and check for limitations like "OPENMAX" limits.h
 
 - add failure checks!!!  (malloc returns NULL failure, check: fopen, opendir, readdir)
@@ -19,8 +17,6 @@ TODO:
             - provide options to restrict files searched
 
 - what to do with simlinks
-
-- create static library from operations.c
 
 - write _search function
 

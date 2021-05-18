@@ -56,7 +56,7 @@ typedef struct searchStats {
     uint64_t alter_count;                   // number of files altered 
 } searchStats;
 
-typedef void (*operation) (struct searchItem*, struct options);
+typedef void (*operation) (struct searchItem*, struct options);         // function pointer parameter accepted by parseFile(...)
 
 struct searchStats initSearchStats();
 fileType getFileType(mode_t m);
