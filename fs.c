@@ -13,17 +13,16 @@
 #include <stdlib.h>
 
 
-
-// make check function to ignore certain folders 
-// ".", "..", ".gitignore"
-
-
 // ".", ".."  ignored by default 
-
-
 // other file names /  directory names / file extensions  => can be manually ignored
 
 
+/**
+ * - filenames to ignore
+ * - directories to ignore 
+ * - files with certain extensions to ignore
+ * 
+ **/
 int main(void) {
     searchStats stats = initSearchStats();
     
@@ -35,7 +34,7 @@ int main(void) {
     
     recursive(ROOTPATH, &index, &stats);         // searchIndex populated when this finishes
     
-    //printIndex(&index);
+    printIndex(&index);
     
     parseIndex(&index, &options);
     
@@ -43,6 +42,8 @@ int main(void) {
     
     return 0;
 }
+
+
 
 void addToIndex(struct searchIndex* si, const char* item_path, ino_t serial, fileType type) {
     strcpy(si->items[si->size].path, item_path);                       
@@ -65,12 +66,11 @@ void recursive(char *path, struct searchIndex* index, struct searchStats* stats)
             strcat(item_path,path);                                                                  
             strcat(item_path, item_name);
             fileType type = getFileStatus(item_path);
-            getItemPath(path, item_name, &item_path2[0], type);
+            getItemPath(path, item_name, &item_path2[0], type);                         // sets item_path2
 
             switch(type) {
                 case REGULAR:
                     stats->file_count++;                                // update stats
-                    printf("COUNTING: %s\n", item_name);
                     addToIndex(index, item_path, dp->d_ino, type);
                     break;
                 case DIREC:
@@ -88,7 +88,7 @@ void recursive(char *path, struct searchIndex* index, struct searchStats* stats)
 }
 
 
-fileType FileType (mode_t m) {              // @param m | st_mode attribute of struct stat
+fileType getFileType (mode_t m) {           // @param m | st_mode attribute of struct stat
     switch (m & S_IFMT) {                   //bitwise AND to determine file type
         case S_IFSOCK:  return SOCKET;      //socket
         case S_IFLNK:   return SYMLINK;     //symbolic link
@@ -111,7 +111,7 @@ fileType getFileStatus (const char* path) {
     if(fileStatusRes == -1) {
         fileType = UNKNOWN;
     } else {
-        fileType = FileType(buffer->st_mode);
+        fileType = getFileType(buffer->st_mode);
     }
     
     return fileType;

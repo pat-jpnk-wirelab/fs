@@ -4,6 +4,8 @@ TODO:
 
 - check what should be const 
 
+- FIX item_path mess in recursive()
+
 - analyze where to make checks (./..) or (./.git / .git)
 
 - use and check for limitations like "OPENMAX" limits.h
@@ -27,7 +29,7 @@ TODO:
 ----------------------------------------------------------------------
 
 !!!!!! - starting directory itself is not counted in searchStats
-!!!!!! - function FileType() from stackoverflow (https://stackoverflow.com/questions/56212434/how-to-know-a-files-type)
+!!!!!! - function getFileType() from stackoverflow (https://stackoverflow.com/questions/56212434/how-to-know-a-files-type)
 !!!!!! - TERMINOLOGY: file or stream is mostly called 'item' in this program
 !!!!!! - filenames "." and ".." are ignored in recursive(...) by default
 

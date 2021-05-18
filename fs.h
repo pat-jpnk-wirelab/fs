@@ -59,7 +59,7 @@ typedef struct searchStats {
 typedef void (*operation) (struct searchItem*, struct options);
 
 struct searchStats initSearchStats();
-fileType FileType(mode_t m);
+fileType getFileType(mode_t m);
 fileType getFileStatus(const char* path);
 void parseFile(operation op, struct searchIndex* index, struct options options, uint64_t size);
 void parseIndex(struct searchIndex* index, struct options* options);
