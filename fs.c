@@ -177,7 +177,6 @@ void _search(struct searchItem* item, struct options options) {
     printf("Hello World from search\n");
     // capitalization, spacing, search_term
     
-    
     /**
     FILE *fp = fopen(item->path, "r");
     uint32_t c;
