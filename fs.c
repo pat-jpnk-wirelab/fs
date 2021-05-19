@@ -22,10 +22,14 @@
  * 
  **/
 int main(void) {
+
+   // char ignore_file[] = {".git",".gitignore",".","..","a.out"};
+
     searchStats stats = initSearchStats();
     
     struct options options;
     options.function = SEARCH;
+    options.search_term = "special";
 
     struct searchIndex index;
     index.size = 0;
@@ -34,7 +38,7 @@ int main(void) {
     
     printIndex(&index);
     
-    //parseIndex(&index, &options);
+    parseIndex(&index, &options);
     
     //printStats(&stats);
     
@@ -120,7 +124,7 @@ fileType getFileStatus (const char* path) {
  
 void createSearchItem(struct searchItem* item, ino_t serial, char* path, fileType type) {
     strcpy(item->path, path);
-    item->success = false;    // default false at this point, no search attempted thus far
+    item->success = false;
     item->st_ino = serial;
     item->type = type;
 }
@@ -138,10 +142,10 @@ struct searchStats initSearchStats() {
  * @param const char* path      - current base path
  * @param const char* item_name - item name
  **/
-void getItemPath(const char* path, const char* item_name, char* item_path) {                   
-    strcat(item_path,path);                                                                        
-    strcat(item_path, item_name); 
-    strcat(item_path, "/");                                                         
+void getItemPath(const char* path, const char* item_name, char* directory_path) {                   
+    strcat(directory_path,path);                                                                        
+    strcat(directory_path, item_name); 
+    strcat(directory_path, "/");                                                         
 }
  
 void parseFile(operation op, struct searchIndex* index, struct options options, uint64_t size) {
@@ -153,12 +157,16 @@ void parseFile(operation op, struct searchIndex* index, struct options options, 
 void parseIndex(struct searchIndex* index, struct options* options) {
     switch(options->function) {
         case SEARCH:
+            printf("SEARCH! size %llu\n", index->size);
             parseFile(_search,index,*options,index->size);
             break;
         case REPLACE:
             printf("REPLACE!\n");
             parseFile(_replace,index,*options,index->size);
             break;
+        case INFO:
+            printf("INFO!\n");
+            parseFile(_info,index,*options,index->size);
         default:
             break;
     }

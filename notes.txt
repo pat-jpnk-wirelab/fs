@@ -2,9 +2,11 @@
 
 TODO:
 
-- how to return results generally, add static global stats ?
+- add universal file exclusion
 
-- check what should be const 
+- remove createSearchItem success attribute
+
+- how to return results generally, add static global stats ? stats for each op ?
 
 - use and check for limitations like "OPENMAX" limits.h
 
