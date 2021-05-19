@@ -2,9 +2,9 @@
 
 TODO:
 
-- check what should be const 
+- how to return results generally, add static global stats ?
 
-- FIX item_path mess in recursive()
+- check what should be const 
 
 - use and check for limitations like "OPENMAX" limits.h
 

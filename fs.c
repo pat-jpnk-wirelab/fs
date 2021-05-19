@@ -15,10 +15,8 @@
 
 // ".", ".."  ignored by default 
 // other file names /  directory names / file extensions  => can be manually ignored
-
-
 /**
- * - filenames to ignore
+ * - filenames to ignore                    function 
  * - directories to ignore 
  * - files with certain extensions to ignore
  * 
@@ -56,26 +54,24 @@ void recursive(char *path, struct searchIndex* index, struct searchStats* stats)
     DIR *dir = opendir(path);
 
     while ((dp = readdir(dir)) != NULL) {
-        char item_path[MAX_PATH_SIZE] = "";                                             // pathname 
-        char item_path2[MAX_PATH_SIZE] = "";                                            // gets '/' added if directory, used for next recursion // TODO: add better name
+        char item_path[MAX_PATH_SIZE] = "";                           
+        char directory_path[MAX_PATH_SIZE] = "";                        
         const char* item_name = dp->d_name;
 
-        if(strcmp(item_name, ".") != 0 && strcmp(item_name, "..") != 0) {               // gets also checked in getItemPath();
+        if(filterFileName(item_name) == true) {           
             strcat(item_path,path);                                                                  
             strcat(item_path, item_name);
             fileType type = getFileStatus(item_path);
-            getItemPath(path, item_name, &item_path2[0], type);                         // sets item_path2
 
             switch(type) {
                 case REGULAR:
-                    stats->file_count++;                                // update stats
+                    stats->file_count++;                                                                // update stats
                     addToIndex(index, item_path, dp->d_ino, type);
                     break;
                 case DIREC:
-                    if ((strcmp(item_path, "./.") != 0 && strcmp(item_path, "./..") != 0) && strcmp(item_path, "./.git") != 0 && (int) type == 4) {
-                        stats->dir_count++;                             // update stats
-                        recursive(item_path2, index, stats);
-                    }
+                        stats->dir_count++;
+                        getItemPath(path, item_name, &directory_path[0]);                             // update stats
+                        recursive(directory_path, index, stats);
                     break;
                 default:
                     break;
@@ -85,6 +81,13 @@ void recursive(char *path, struct searchIndex* index, struct searchStats* stats)
     closedir(dir);
 }
 
+
+bool filterFileName(const char * item_name) {
+    if(strcmp(item_name, "a.out") != 0 && strcmp(item_name, ".git") != 0 && strcmp(item_name, ".gitignore") != 0 && strcmp(item_name, ".") != 0 && strcmp(item_name, "..") != 0) {
+        return true;
+    }
+    return false;
+}
 
 fileType getFileType (mode_t m) {           // @param m | st_mode attribute of struct stat
     switch (m & S_IFMT) {                   //bitwise AND to determine file type
@@ -134,14 +137,11 @@ struct searchStats initSearchStats() {
 /**
  * @param const char* path      - current base path
  * @param const char* item_name - item name
- * @return const char*
  **/
-void getItemPath(const char* path, const char* item_name, char* item_path, fileType type) {                   
+void getItemPath(const char* path, const char* item_name, char* item_path) {                   
     strcat(item_path,path);                                                                        
     strcat(item_path, item_name); 
-    if(strcmp(item_name, ".") != 0 && strcmp(item_name, "..") != 0 && strcmp(item_name, ".git") != 0 && type == DIREC) {
-        strcat(item_path, "/");
-    }                                                         
+    strcat(item_path, "/");                                                         
 }
  
 void parseFile(operation op, struct searchIndex* index, struct options options, uint64_t size) {
@@ -157,7 +157,7 @@ void parseIndex(struct searchIndex* index, struct options* options) {
             break;
         case REPLACE:
             printf("REPLACE!\n");
-            parseFile(_replace,index,*options, index->size);
+            parseFile(_replace,index,*options,index->size);
             break;
         default:
             break;

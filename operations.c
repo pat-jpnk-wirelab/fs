@@ -12,13 +12,9 @@
 // opens files in read only mode
 // if operation: SEARCH -> _search function = options[bool capitalization;, bool spacing, char* search_term;]
 void _search(struct searchItem* item, struct options options) {
-    printf("Hello World from search\n");
-
     // print contents of file
-
-    /**
     FILE *fp = fopen(item->path, "r");
-    uint32_t c;
+        char c; //= fgetc(fp);
 
     while(true) {
         c = fgetc(fp);
@@ -28,7 +24,6 @@ void _search(struct searchItem* item, struct options options) {
         printf("%c", c);
     }
     fclose(fp);
-    **/
 }
 
 // opens files in read and write mode
@@ -37,3 +32,4 @@ void _search(struct searchItem* item, struct options options) {
 void _replace(struct searchItem* item, struct options options) {
     printf("Hello world from replace\n");
 }
+

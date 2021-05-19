@@ -1,6 +1,7 @@
 #include <sys/stat.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 #ifndef FS_H
 #define FS_H
@@ -61,10 +62,11 @@ typedef void (*operation) (struct searchItem*, struct options);         // funct
 struct searchStats initSearchStats();
 fileType getFileType(mode_t m);
 fileType getFileStatus(const char* path);
+bool filterFileName(const char * item_name); 
 void parseFile(operation op, struct searchIndex* index, struct options options, uint64_t size);
 void parseIndex(struct searchIndex* index, struct options* options);
 void printIndex(struct searchIndex* index);
-void getItemPath(const char* path, const char* item_name, char* item_path,  fileType type);
+void getItemPath(const char* path, const char* item_name, char* item_path);
 void recursive(char *basePath, struct searchIndex* index, struct searchStats* stats);
 void createSearchItem(struct searchItem* item, ino_t serial, char* path, fileType type);
 void printStats(struct searchStats* stats);
