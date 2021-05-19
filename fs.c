@@ -34,7 +34,7 @@ int main(void) {
     
     printIndex(&index);
     
-    parseIndex(&index, &options);
+    //parseIndex(&index, &options);
     
     //printStats(&stats);
     
@@ -166,7 +166,7 @@ void parseIndex(struct searchIndex* index, struct options* options) {
 
 // ############## helper #################
 void printIndex(struct searchIndex* index) {
-    for(uint64_t k = (index->size - 1); k > 0; k--) {
+    for(uint64_t k = 0; k < index->size; k++) {
         printf("RES: %llu > %s > %llu \n", k, index->items[k].path, index->items[k].st_ino);
     }
 }

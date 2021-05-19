@@ -15,14 +15,14 @@ void _search(struct searchItem* item, struct options options) {
     // print contents of file
     FILE *fp = fopen(item->path, "r");
         char c; //= fgetc(fp);
-
+    /**
     while(true) {
         c = fgetc(fp);
         if(feof(fp)){
             break;
         }
         printf("%c", c);
-    }
+    }**/
     fclose(fp);
 }
 

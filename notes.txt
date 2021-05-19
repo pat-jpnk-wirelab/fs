@@ -22,6 +22,8 @@ TODO:
 
 - create dedicated functions for stats (increment)
 
+- separate code more 
+
 ----------------------------------------------------------------------
 
 !!!!!! - starting directory itself is not counted in searchStats
