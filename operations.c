@@ -1,6 +1,7 @@
 #include "operations.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 
 /**
  * here functions that conform to the defined type 'operation' are defined
@@ -21,22 +22,22 @@ void _search(struct searchItem* item, struct options options) {
     
     char* buffer = NULL;
     size_t len;
-    ssize_t bytes_read = getdelim( &buffer, &len, EOF, fp);
+    ssize_t bytes_read = getdelim(&buffer, &len, EOF, fp);
     if (bytes_read != -1) {
         // this code wont be reached if file is empty
         //printf("item :%s -- char of buffer: %c >> SIZE: %zu\n",item->path,*(buffer+1), len);
 
-        unsigned int i = (int) len;
-        unsigned int j = 0;
+        uint64_t i = (uint64_t) len;
+        uint64_t j = 0;
 
-        unsigned int line_count = 1;
-        unsigned int j_cache = j;
+        uint64_t line_count = 1;
+        uint64_t j_cache = j;
 
         while(j < i) {
             
             if(*(buffer+j) == '\n') {
                 line_count++;
-                j_cache = 0;
+                j_cache = 0;                // for counting position in line in finding
             }
 
             if((*(buffer+j) == options.search_term[0])) {
@@ -51,7 +52,6 @@ void _search(struct searchItem* item, struct options options) {
                     }
                     if(mismatch == false) {
                         printf("\t\tMATCH FOUND; POS: %u IN %s LINEL: %u\n", j_cache, item->path, line_count);
-                        printf("LINE %c\n", *(buffer+11));
                     }
                     break;
                 } 
@@ -63,7 +63,6 @@ void _search(struct searchItem* item, struct options options) {
         printf("Error");
     }
     fclose(fp);
-    
 }
 
 // opens files in read and write mode

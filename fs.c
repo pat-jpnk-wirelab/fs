@@ -11,6 +11,9 @@
 		                // errno gets set by opendir() from dirent.h
 #include <sys/stat.h>
 #include <stdlib.h>
+#include <getopt.h>
+#include "colors.h"
+
 
 
 // ".", ".."  ignored by default 
@@ -21,16 +24,39 @@
  * - files with certain extensions to ignore
  * 
  **/
-int main(void) {
+int main(int argc, char *argv[]) {
+    int opt;
+    struct options options;
+    options.search_term = "special";
+
+
+    while((opt = getopt(argc, argv, "sri")) != -1) {
+        switch(opt) {
+            case 's':
+                options.function = SEARCH;
+                printf(KGRN"OPTION search chosen!\n"KRESET);
+                break;
+
+            case 'r':
+                options.function = REPLACE;
+                printf(KCYN"OPTION search chosen!\n"KRESET);
+                break;
+
+            case 'i':
+                options.function = INFO;
+                printf(KYEL"OPTION search chosen!\n"KRESET);
+                break;
+
+            default:
+                break;
+        }   
+    }
+
 
    // char ignore_file[] = {".git",".gitignore",".","..","a.out"};
 
     searchStats stats = initSearchStats();
     
-    struct options options;
-    options.function = SEARCH;
-    options.search_term = "special";
-
     struct searchIndex index;
     index.size = 0;
     

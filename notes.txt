@@ -18,6 +18,8 @@ TODO:
             - replace a term with another term in all files (w/ options about capturing as above)
             - provide options to restrict files searched
 
+- apply checks for cmd arguments (min_len search term -> 1)
+
 - what to do with simlinks
 
 - write _search function
@@ -25,6 +27,7 @@ TODO:
 - create dedicated functions for stats (increment)
 
 - separate code more 
+
 
 ----------------------------------------------------------------------
 
