@@ -41,7 +41,6 @@ typedef struct searchItem {
     ino_t st_ino;                           // File serial number defined in <sys/stat.h>
     char path[MAX_PATH_SIZE];               // changed from char*
     fileType type;                          // enum defined above 
-    bool success;                           // initialize to false - success for search 
     bool altered;                           // initilaize to false 
     char res_preview[MAX_PREVIEW_SIZE];     // holds preview if search successful
 } searchItem;

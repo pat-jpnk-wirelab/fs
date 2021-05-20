@@ -11,6 +11,7 @@
 		                // errno gets set by opendir() from dirent.h
 #include <sys/stat.h>
 #include <stdlib.h>
+
 #include <getopt.h>
 #include "colors.h"
 
@@ -30,7 +31,7 @@ int main(int argc, char *argv[]) {
     options.search_term = "special";
 
 
-    while((opt = getopt(argc, argv, "sri")) != -1) {
+    while((opt = getopt(argc, argv, "srih")) != -1) {
         switch(opt) {
             case 's':
                 options.function = SEARCH;
@@ -39,14 +40,18 @@ int main(int argc, char *argv[]) {
 
             case 'r':
                 options.function = REPLACE;
-                printf(KCYN"OPTION search chosen!\n"KRESET);
+                printf(KCYN"OPTION replace chosen!\n"KRESET);
                 break;
 
             case 'i':
                 options.function = INFO;
-                printf(KYEL"OPTION search chosen!\n"KRESET);
+                printf(KYEL"OPTION info chosen!\n"KRESET);
                 break;
-
+            
+            case 'h':
+                // give help
+                printf("halp\n");
+                return 0;
             default:
                 break;
         }   
@@ -66,14 +71,13 @@ int main(int argc, char *argv[]) {
     
     parseIndex(&index, &options);
     
-    //printStats(&stats);
+    printStats(&stats);
     
     return 0;
 }
 
 void addToIndex(struct searchIndex* si, const char* item_path, ino_t serial, fileType type) {
-    strcpy(si->items[si->size].path, item_path);                       
-    si->items[si->size].success = false;                          
+    strcpy(si->items[si->size].path, item_path);                                             
     si->items[si->size].st_ino = serial;
     si->items[si->size].type = type;
     si->size++;
@@ -150,7 +154,6 @@ fileType getFileStatus (const char* path) {
  
 void createSearchItem(struct searchItem* item, ino_t serial, char* path, fileType type) {
     strcpy(item->path, path);
-    item->success = false;
     item->st_ino = serial;
     item->type = type;
 }
@@ -201,7 +204,7 @@ void parseIndex(struct searchIndex* index, struct options* options) {
 // ############## helper #################
 void printIndex(struct searchIndex* index) {
     for(uint64_t k = 0; k < index->size; k++) {
-        printf("RES: %llu > %s > %llu \n", k, index->items[k].path, index->items[k].st_ino);
+        //printf("RES: %llu > %s > %llu \n", k, index->items[k].path, index->items[k].st_ino);
     }
 }
 

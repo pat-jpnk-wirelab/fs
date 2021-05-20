@@ -10,39 +10,31 @@
  * must have an equivalent in "enum func" in fs.h
  **/
 
-// opens files in read only mode
+
 // if operation: SEARCH -> _search function = options[bool capitalization;, bool spacing, char* search_term;]
 void _search(struct searchItem* item, struct options options) {
     FILE *fp = fopen(item->path, "r");
-    char c;
-
-    size_t search_term_len = strlen(options.search_term);
-
-    printf("PATH: %s ST: %s L: %zu\n", item->path, options.search_term, search_term_len);
-    
     char* buffer = NULL;
     size_t len;
-    ssize_t bytes_read = getdelim(&buffer, &len, EOF, fp);
+    size_t search_term_len = strlen(options.search_term);
+    ssize_t bytes_read = getdelim(&buffer, &len, EOF, fp); 
+    
     if (bytes_read != -1) {
         // this code wont be reached if file is empty
         //printf("item :%s -- char of buffer: %c >> SIZE: %zu\n",item->path,*(buffer+1), len);
 
         uint64_t i = (uint64_t) len;
         uint64_t j = 0;
-
         uint64_t line_count = 1;
-        uint64_t j_cache = j;
+        uint64_t j_cache = 0;
 
         while(j < i) {
-            
             if(*(buffer+j) == '\n') {
                 line_count++;
                 j_cache = 0;                // for counting position in line in finding
             }
-
-            if((*(buffer+j) == options.search_term[0])) {
+            if((*(buffer+j) == options.search_term[0])) {                           
                 bool mismatch = false;
-
                 while(mismatch == false) {  
                     for(size_t k = 1; k < search_term_len; k++) {
                         if((*(buffer+j+k) != options.search_term[k])) {
@@ -51,7 +43,7 @@ void _search(struct searchItem* item, struct options options) {
                         }
                     }
                     if(mismatch == false) {
-                        printf("\t\tMATCH FOUND; POS: %u IN %s LINEL: %u\n", j_cache, item->path, line_count);
+                        printf("\t\tMATCH FOUND; POS: %llu IN %s LINEL: %llu\n", j_cache, item->path, line_count);  // MATCH FOUND
                     }
                     break;
                 } 
@@ -59,8 +51,6 @@ void _search(struct searchItem* item, struct options options) {
             j_cache++;
             j++;
         }
-    } else {
-        printf("Error");
     }
     fclose(fp);
 }
@@ -71,8 +61,8 @@ void _replace(struct searchItem* item, struct options options) {
     printf("Hello world from replace\n");
 }
 
-
+// does not open files
 void _info(struct searchItem* item, struct options options) {
-    printf("Hello world from replace\n");
+    printf("Hello world from info\n");
 }
 

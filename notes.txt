@@ -2,9 +2,12 @@
 
 TODO:
 
-- add universal file exclusion
 
-- remove createSearchItem success attribute
+- create dedicated functions for stats (increment)
+
+- remove stdint from operations.h // improve _search speed
+
+- add universal file exclusion
 
 - how to return results generally, add static global stats ? stats for each op ?
 
@@ -13,18 +16,18 @@ TODO:
 - add failure checks!!!  (malloc returns NULL failure, check: fopen, opendir, readdir)
 
 - add commandline arguments / functionality
+        - use arguments
+        - how to have multiple arguments for exclusion
+        - control spaces with quotes implicitly
+        - add option to ignore duplicate files names ?
+
         fs options:
-            - list all files where a search_term occurs (w/wo snippets, w/ rules about search params: 'spaces, capitalization')
             - replace a term with another term in all files (w/ options about capturing as above)
             - provide options to restrict files searched
-
+0
 - apply checks for cmd arguments (min_len search term -> 1)
 
 - what to do with simlinks
-
-- write _search function
-
-- create dedicated functions for stats (increment)
 
 - separate code more 
 
