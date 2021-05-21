@@ -31,9 +31,10 @@ int main(int argc, char *argv[]) {
     options.search_term = "special";
 
 
-    while((opt = getopt(argc, argv, "srih")) != -1) {
+    while((opt = getopt(argc, argv, "s:rih")) != -1) {
         switch(opt) {
             case 's':
+                printf("ARG: %s\n", optarg);  // argv[2]
                 options.function = SEARCH;
                 printf(KGRN"OPTION search chosen!\n"KRESET);
                 break;
