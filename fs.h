@@ -29,10 +29,7 @@ typedef enum func {
 } func;
 
 typedef struct options {
-    bool capitalization;
-    bool spacing;
     func function;
-    bool replace;
     char* search_term;
     char* replacement_term;
 } options;
@@ -67,7 +64,6 @@ void parseFile(operation op, struct searchIndex* index, struct options options, 
 void parseIndex(struct searchIndex* index, struct options* options);
 void getItemPath(const char* path, const char* item_name, char* directory_path);
 void recursive(char *basePath, struct searchIndex* index, struct searchStats* stats);
-void createSearchItem(struct searchItem* item, ino_t serial, char* path, fileType type);
 void printStats(struct searchStats* stats);
 void printIndex(struct searchIndex* index);
 

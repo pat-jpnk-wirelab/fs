@@ -4,12 +4,9 @@ TODO:
 
 - fix copmpiler warnings
 
-- create dedicated functions for stats (increment)
-
 - add universal file exclusion arrays
 
 - how to return results generally, add static global stats ? stats for each op ?
-            - 
 
 - use and check for limitations like "OPENMAX" limits.h
 

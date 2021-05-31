@@ -15,8 +15,6 @@
 #include <getopt.h>
 #include "colors.h"
 
-
-
 // ".", ".."  ignored by default 
 // other file names /  directory names / file extensions  => can be manually ignored
 /**
@@ -28,38 +26,38 @@
 int main(int argc, char *argv[]) {
     int opt;
     struct options options;
-    options.search_term = "special";
+    options.search_term = "";
+    options.replacement_term = "";
 
-
-    while((opt = getopt(argc, argv, "s:rih")) != -1) {
+    while((opt = getopt(argc, argv, "s:r:ih")) != -1) {
         switch(opt) {
             case 's':
-                printf("ARG: %s\n", optarg);  // argv[2]
                 options.function = SEARCH;
-                printf(KGRN"OPTION search chosen!\n"KRESET);
+                options.search_term = optarg;
                 break;
 
             case 'r':
                 options.function = REPLACE;
-                printf(KCYN"OPTION replace chosen!\n"KRESET);
+                options.search_term = optarg;
+                options.replacement_term = argv[3];
+
+                if (options.replacement_term == NULL) {
+                    fprintf(stderr, "fs: option requires two arguments -- r\n");
+                    exit(1);
+                }
                 break;
 
             case 'i':
                 options.function = INFO;
-                printf(KYEL"OPTION info chosen!\n"KRESET);
                 break;
             
             case 'h':
-                // give help
-                printf("halp\n");
+                printf(KGRN"fs\n"KRESET"search"KYEL" -s [search term]"KRESET"\ninfo"KYEL" -i "KRESET"\nreplace "KYEL"-r [target term] [replacement term]"KRESET"\n");
                 return 0;
             default:
-                break;
+                return -1;
         }   
     }
-
-
-   // char ignore_file[] = {".git",".gitignore",".","..","a.out"};
 
     searchStats stats = initSearchStats();
     
@@ -92,6 +90,7 @@ void recursive(char *path, struct searchIndex* index, struct searchStats* stats)
         char item_path[MAX_PATH_SIZE] = "";                           
         char directory_path[MAX_PATH_SIZE] = "";                        
         const char* item_name = dp->d_name;
+
 
         if(filterFileName(item_name) == true) {           
             strcat(item_path,path);                                                                  
@@ -152,12 +151,6 @@ fileType getFileStatus (const char* path) {
     
     return fileType;
 }
- 
-void createSearchItem(struct searchItem* item, ino_t serial, char* path, fileType type) {
-    strcpy(item->path, path);
-    item->st_ino = serial;
-    item->type = type;
-}
 
 struct searchStats initSearchStats() {
     struct searchStats stats;
@@ -187,15 +180,12 @@ void parseFile(operation op, struct searchIndex* index, struct options options, 
 void parseIndex(struct searchIndex* index, struct options* options) {
     switch(options->function) {
         case SEARCH:
-            printf("SEARCH! size %llu\n", index->size);
             parseFile(_search,index,*options,index->size);
             break;
         case REPLACE:
-            printf("REPLACE!\n");
             parseFile(_replace,index,*options,index->size);
             break;
         case INFO:
-            printf("INFO!\n");
             parseFile(_info,index,*options,index->size);
         default:
             break;
@@ -210,6 +200,7 @@ void printIndex(struct searchIndex* index) {
 }
 
 void printStats(struct searchStats* stats) {
-    printf("\nstats:\nf: %llu\nd: %llu\ns: %llu\na: %llu\n", stats->file_count, stats->dir_count, stats->search_count, stats->alter_count);
+    //printf("\nstats:\nf: %llu\nd: %llu\ns: %llu\na: %llu\n", stats->file_count, stats->dir_count, stats->search_count, stats->alter_count);
+    printf(KWHT"\n%llu directories / %llu files\n"KRESET, stats->dir_count, stats->file_count);
 }
 // ######################################## 
