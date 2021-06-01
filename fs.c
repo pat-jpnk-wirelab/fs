@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
 #include "fs.h"
@@ -10,19 +11,10 @@
 #include <errno.h>      // defines errno
 		                // errno gets set by opendir() from dirent.h
 #include <sys/stat.h>
-#include <stdlib.h>
 
 #include <getopt.h>
 #include "colors.h"
 
-// ".", ".."  ignored by default 
-// other file names /  directory names / file extensions  => can be manually ignored
-/**
- * - filenames to ignore                    function 
- * - directories to ignore 
- * - files with certain extensions to ignore
- * 
- **/
 int main(int argc, char *argv[]) {
     int opt;
     struct options options;
@@ -91,7 +83,6 @@ void recursive(char *path, struct searchIndex* index, struct searchStats* stats)
         char directory_path[MAX_PATH_SIZE] = "";                        
         const char* item_name = dp->d_name;
 
-
         if(filterFileName(item_name) == true) {           
             strcat(item_path,path);                                                                  
             strcat(item_path, item_name);
@@ -99,12 +90,12 @@ void recursive(char *path, struct searchIndex* index, struct searchStats* stats)
 
             switch(type) {
                 case REGULAR:
-                    stats->file_count++;                                                                // update stats
+                    stats->file_count++;                                                // update stats
                     addToIndex(index, item_path, dp->d_ino, type);
                     break;
                 case DIREC:
                         stats->dir_count++;
-                        getItemPath(path, item_name, &directory_path[0]);                             // update stats
+                        getItemPath(path, item_name, &directory_path[0]);               // update stats
                         recursive(directory_path, index, stats);
                     break;
                 default:
