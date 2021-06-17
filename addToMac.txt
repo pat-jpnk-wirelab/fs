@@ -1,0 +1,17 @@
+How to add to mac
+
+x = command name 
+
+/etc/paths.d 
+
+add ascii file "x" 
+	content: /usr/local/"x"/bin
+
+
+in /usr/local
+
+create /"x"/bin
+
+insert binary executable into /bin with name "x"  
+
+

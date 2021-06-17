@@ -1,7 +1,6 @@
 #include <sys/stat.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <stdbool.h>
 
 #ifndef FS_H
 #define FS_H

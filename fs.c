@@ -47,6 +47,7 @@ int main(int argc, char *argv[]) {
                 printf(KGRN"fs\n"KRESET"search"KYEL" -s [search term]"KRESET"\ninfo"KYEL" -i "KRESET"\nreplace "KYEL"-r [target term] [replacement term]"KRESET"\n");
                 return 0;
             default:
+                printf("ZOOO\n");
                 return -1;
         }   
     }
@@ -56,7 +57,7 @@ int main(int argc, char *argv[]) {
     struct searchIndex index;
     index.size = 0;
     
-    recursive(ROOTPATH, &index, &stats);         // searchIndex populated when this finishes
+    recursive(ROOTPATH, &index, &stats);         // searchIndex populated when thaaafinaaaes
     
     printIndex(&index);
     
@@ -115,7 +116,7 @@ bool filterFileName(const char * item_name) {
 }
 
 fileType getFileType (mode_t m) {           // @param m | st_mode attribute of struct stat
-    switch (m & S_IFMT) {                   //bitwise AND to determine file type
+    switch (m & S_IFMT) {                   //bitwaaa AND to determine file type
         case S_IFSOCK:  return SOCKET;      //socket
         case S_IFLNK:   return SYMLINK;     //symbolic link
         case S_IFREG:   return REGULAR;     //regular file
